@@ -13,3 +13,9 @@
 
 Blocked / later:
 - Real data + stories/pledges persistence — user chose "pages first, data later"; no database connected yet.
+
+## Content guardrails (must hold everywhere)
+- No HB 4918 / broadband bill citations; broadband = data tab + story-form policy statement only.
+- No conflation of HB 5676-5677 with the Caucus's own proposal; Caucus proposal off-site for now.
+- Never invent data -> "coming soon" state; every data point shows a source link.
+- Party never shown publicly.
