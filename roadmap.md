@@ -19,3 +19,8 @@ Blocked / later:
 - No conflation of HB 5676-5677 with the Caucus's own proposal; Caucus proposal off-site for now.
 - Never invent data -> "coming soon" state; every data point shows a source link.
 - Party never shown publicly.
+
+## Added later
+- [ ] Rename site to "MI Essentials" (wordmark, titles, metadata)
+- [ ] Section C story form: utility type, company, city/county (83 counties), story w/ 1500 counter, bill, issues multi-select, name/anonymous, email, consents, honeypot, recent stories grid + filter, empty state
+- [ ] Pledge page: intro, pledge box w/ blue left rule, light-blue non-endorsement box, full field set, signers wall w/ count + filter/search, Pledge #2 teaser

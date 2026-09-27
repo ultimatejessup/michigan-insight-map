@@ -1,200 +1,145 @@
+import michigan from "./michigan-counties.json";
+
 /**
- * Placeholder Michigan utility data.
- * Replace with live database reads once a database is connected.
+ * NO INVENTED DATA.
+ * Every series below is intentionally empty until a real, sourced dataset is
+ * connected. Components must render the "Data coming soon" state whenever a
+ * series is empty, and must never display a fabricated number.
  */
 
 export type UtilityKey = "electric" | "gas" | "water" | "broadband";
 
-export type RatePoint = {
-  year: number;
-  michigan: number;
-  national: number;
+export type MonthlyRatePoint = {
+  /** ISO month, e.g. "2018-05" */
+  month: string;
+  utility: string;
+  value: number;
 };
 
-export type UtilityService = {
+export type Source = {
+  label: string;
+  url: string;
+} | null;
+
+export type UtilityDataset = {
   key: UtilityKey;
   label: string;
-  unit: string;
   unitShort: string;
-  blurb: string;
-  series: RatePoint[];
+  /** Utility companies available as a filter. Empty until data is connected. */
+  utilities: string[];
+  /** Monthly rate history. Empty until data is connected. */
+  series: MonthlyRatePoint[];
+  source: Source;
+  comingSoonNote: string;
 };
 
-export const utilityServices: UtilityService[] = [
+export const utilityDatasets: UtilityDataset[] = [
   {
     key: "electric",
     label: "Electric",
-    unit: "cents per kilowatt-hour",
     unitShort: "¢/kWh",
-    blurb:
-      "Average residential electricity price in Michigan compared with the U.S. average.",
-    series: [
-      { year: 2016, michigan: 15.2, national: 12.6 },
-      { year: 2017, michigan: 15.4, national: 12.9 },
-      { year: 2018, michigan: 15.9, national: 12.9 },
-      { year: 2019, michigan: 16.3, national: 13.0 },
-      { year: 2020, michigan: 16.6, national: 13.2 },
-      { year: 2021, michigan: 17.1, national: 13.7 },
-      { year: 2022, michigan: 17.9, national: 15.1 },
-      { year: 2023, michigan: 18.8, national: 15.9 },
-      { year: 2024, michigan: 19.6, national: 16.4 },
-      { year: 2025, michigan: 20.4, national: 16.8 },
-    ],
+    utilities: [],
+    series: [],
+    source: null,
+    comingSoonNote:
+      "Monthly residential electric rate history (May 2018 onward) will appear here once the rate dataset is connected.",
   },
   {
     key: "gas",
-    label: "Natural gas",
-    unit: "dollars per thousand cubic feet",
+    label: "Natural Gas",
     unitShort: "$/Mcf",
-    blurb:
-      "Average residential natural gas price in Michigan compared with the U.S. average.",
-    series: [
-      { year: 2016, michigan: 8.4, national: 10.1 },
-      { year: 2017, michigan: 8.7, national: 10.5 },
-      { year: 2018, michigan: 8.9, national: 10.5 },
-      { year: 2019, michigan: 9.1, national: 10.6 },
-      { year: 2020, michigan: 9.3, national: 10.8 },
-      { year: 2021, michigan: 10.2, national: 12.2 },
-      { year: 2022, michigan: 11.8, national: 14.3 },
-      { year: 2023, michigan: 12.1, national: 15.0 },
-      { year: 2024, michigan: 12.6, national: 15.2 },
-      { year: 2025, michigan: 13.2, national: 15.5 },
-    ],
+    utilities: [],
+    series: [],
+    source: null,
+    comingSoonNote:
+      "Monthly residential natural gas rate history (May 2018 onward) will appear here once the rate dataset is connected.",
   },
   {
     key: "water",
-    label: "Water & sewer",
-    unit: "dollars per month, typical household",
+    label: "Water",
     unitShort: "$/month",
-    blurb:
-      "Typical combined water and sewer bill in Michigan compared with the U.S. average.",
-    series: [
-      { year: 2016, michigan: 68, national: 64 },
-      { year: 2017, michigan: 71, national: 66 },
-      { year: 2018, michigan: 75, national: 69 },
-      { year: 2019, michigan: 79, national: 72 },
-      { year: 2020, michigan: 83, national: 75 },
-      { year: 2021, michigan: 87, national: 78 },
-      { year: 2022, michigan: 92, national: 82 },
-      { year: 2023, michigan: 98, national: 86 },
-      { year: 2024, michigan: 104, national: 90 },
-      { year: 2025, michigan: 110, national: 94 },
-    ],
+    utilities: [],
+    series: [],
+    source: null,
+    comingSoonNote:
+      "Michigan water and sewer rates are set by hundreds of local systems, so there is no single statewide dataset loaded yet.",
   },
   {
     key: "broadband",
     label: "Broadband",
-    unit: "dollars per month, 100 Mbps plan",
     unitShort: "$/month",
-    blurb:
-      "Advertised price for a typical 100 Mbps home internet plan in Michigan compared with the U.S. average.",
-    series: [
-      { year: 2016, michigan: 58, national: 60 },
-      { year: 2017, michigan: 60, national: 61 },
-      { year: 2018, michigan: 62, national: 63 },
-      { year: 2019, michigan: 64, national: 64 },
-      { year: 2020, michigan: 66, national: 65 },
-      { year: 2021, michigan: 68, national: 66 },
-      { year: 2022, michigan: 71, national: 68 },
-      { year: 2023, michigan: 74, national: 70 },
-      { year: 2024, michigan: 77, national: 71 },
-      { year: 2025, michigan: 80, national: 73 },
-    ],
+    utilities: [],
+    series: [],
+    source: null,
+    comingSoonNote:
+      "Home internet pricing varies by address and provider, and no verified dataset is loaded yet.",
   },
 ];
 
-export type CountyBurden = {
-  county: string;
-  utility: string;
-  burden: number; // percent of household income spent on energy
-  medianIncome: number;
-  annualEnergyCost: number;
-  shutoffsPer1k: number;
+export type MapMetricKey = "burden" | "rate";
+
+export type MapMetric = {
+  key: MapMetricKey;
+  label: string;
+  unit: string;
+  /** County FIPS -> value. Empty until a sourced dataset is connected. */
+  values: Record<string, number>;
+  source: Source;
+  comingSoonNote: string;
 };
 
-export const countyBurdens: CountyBurden[] = [
+export const mapMetrics: MapMetric[] = [
   {
-    county: "Wayne",
-    utility: "DTE Energy",
-    burden: 11.4,
-    medianIncome: 54800,
-    annualEnergyCost: 3210,
-    shutoffsPer1k: 84,
+    key: "burden",
+    label: "Energy burden",
+    unit: "% of household income",
+    values: {},
+    source: null,
+    comingSoonNote:
+      "County energy burden will be shaded here once the DOE LEAD Tool dataset is connected.",
   },
   {
-    county: "Genesee",
-    utility: "Consumers Energy",
-    burden: 10.2,
-    medianIncome: 57900,
-    annualEnergyCost: 3020,
-    shutoffsPer1k: 71,
-  },
-  {
-    county: "Saginaw",
-    utility: "Consumers Energy",
-    burden: 9.6,
-    medianIncome: 56200,
-    annualEnergyCost: 2880,
-    shutoffsPer1k: 63,
-  },
-  {
-    county: "Calhoun",
-    utility: "Consumers Energy",
-    burden: 8.9,
-    medianIncome: 58400,
-    annualEnergyCost: 2760,
-    shutoffsPer1k: 52,
-  },
-  {
-    county: "Ingham",
-    utility: "Lansing BWL",
-    burden: 7.8,
-    medianIncome: 62100,
-    annualEnergyCost: 2590,
-    shutoffsPer1k: 41,
-  },
-  {
-    county: "Macomb",
-    utility: "DTE Energy",
-    burden: 7.1,
-    medianIncome: 72500,
-    annualEnergyCost: 2740,
-    shutoffsPer1k: 38,
-  },
-  {
-    county: "Kent",
-    utility: "Consumers Energy",
-    burden: 6.4,
-    medianIncome: 78300,
-    annualEnergyCost: 2610,
-    shutoffsPer1k: 29,
-  },
-  {
-    county: "Oakland",
-    utility: "DTE Energy",
-    burden: 5.2,
-    medianIncome: 91400,
-    annualEnergyCost: 2880,
-    shutoffsPer1k: 22,
+    key: "rate",
+    label: "Average rate",
+    unit: "¢/kWh",
+    values: {},
+    source: null,
+    comingSoonNote:
+      "County average rates will be shaded here once the rate dataset is connected.",
   },
 ];
 
-export const affordableBurdenThreshold = 6;
+export type County = {
+  name: string;
+  fips: string;
+  d: string;
+  cx: number;
+  cy: number;
+};
 
-export const headlineStats = [
-  {
-    label: "Electric rate increase since 2016",
-    value: "34%",
-    detail: "Michigan residential average, ahead of the national pace.",
-  },
-  {
-    label: "Households above a 6% energy burden",
-    value: "1 in 3",
-    detail: "Spending more than six cents of every income dollar on energy.",
-  },
-  {
-    label: "Shutoff notices each year",
-    value: "200k+",
-    detail: "Disconnection notices sent to Michigan households.",
-  },
+export const michiganMap = michigan as {
+  width: number;
+  height: number;
+  counties: County[];
+};
+
+export const counties: County[] = michiganMap.counties;
+
+export const countyNames: string[] = counties.map((c) => c.name);
+
+export const issueOptions = [
+  "Rate increase",
+  "Shutoff or shutoff notice",
+  "Outage or reliability",
+  "Billing error",
+  "Service quality",
+  "Can't afford bill",
+  "Other",
+] as const;
+
+export const utilityTypeOptions: { value: UtilityKey; label: string }[] = [
+  { value: "electric", label: "Electric" },
+  { value: "gas", label: "Natural Gas" },
+  { value: "water", label: "Water" },
+  { value: "broadband", label: "Broadband" },
 ];
