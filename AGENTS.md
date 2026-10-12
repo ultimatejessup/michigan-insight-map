@@ -10,3 +10,5 @@
 <!-- LOVABLE:END -->
 
 - AI bill explainer streams from the `/api/bill-explain` server route (`src/lib/ai/bill-explainer.server.ts`, Lovable AI Gateway Responses API); uploads are never stored — keeps resident bills private and the API key server-side.
+- Keep navigation and footer in the shared site components so every content page has the same links and notices.
+- Keep Claude handoff guidance in root `CLAUDE.md`; it distinguishes current behavior from unapproved future work.
