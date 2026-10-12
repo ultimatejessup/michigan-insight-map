@@ -4,7 +4,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { BillRedactor } from "@/components/site/bill-redactor";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/bill-check")({
@@ -32,7 +33,7 @@ function BillCheckPage() {
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!file) {
-      setError("Choose a photo of your bill, cover your personal details, and confirm.");
+      setError("Choose a photo or PDF of your bill first.");
       return;
     }
     if (file.size > MAX_BYTES) {
@@ -96,15 +97,22 @@ function BillCheckPage() {
       </p>
 
       <form onSubmit={onSubmit} className="mt-8 rounded-lg border bg-card p-6 shadow-card">
-        <p className="text-base font-semibold">Your bill (photo or screenshot, up to 10 MB)</p>
-        <div className="mt-3">
-          <BillRedactor onChange={setFile} disabled={working} />
-        </div>
+        <Label htmlFor="bill-file" className="text-base font-semibold">
+          Your bill (photo or PDF, up to 10 MB)
+        </Label>
+        <Input
+          id="bill-file"
+          type="file"
+          accept="image/jpeg,image/png,image/webp,application/pdf"
+          className="mt-2"
+          disabled={working}
+          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+        />
 
         <p className="mt-4 text-sm text-muted-foreground">
-          Privacy: your bill is sent to our AI service only to create this explanation. Only the
-          blacked-out copy is sent, and it is not saved on this site. Double-check that nothing
-          personal is still visible.
+          Privacy: your bill is sent to our AI service only to create this explanation. It is not
+          saved on this site. For extra privacy, you can cover your name, address and account
+          number before uploading — but that is up to you.
         </p>
 
         <div className="mt-5 flex flex-wrap gap-3">
