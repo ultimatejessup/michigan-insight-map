@@ -4,7 +4,7 @@ Read `AGENTS.md` before making changes.
 
 ## Transfer state
 - Main navigation includes Tracker, Survey, Pledge, Bill Check and Build. The header no longer has the organizational byline.
-- Footer site links and contact come first; the legal link and exact non-endorsement line follow below a divider.
+- Footer site links include Disclaimers together with Tracker, Survey, Pledge, Bill Check, Build and Origins, with contact beside them; the exact non-endorsement line sits below a divider.
 - `/disclaimers` holds the detailed data privacy, terms of service and content rights notices. Keep the short non-endorsement line in the shared footer.
 - `/origins` explains the purpose, Liberation Caucus direction and Lovable-assisted development, without claiming a fully loaded tracker.
 - `/build` offers campaign, newsletter and SMS choices through an explicit email-request flow, not automated enrollment.
