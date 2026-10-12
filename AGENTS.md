@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- AI bill explainer streams from the `/api/bill-explain` server route (`src/lib/ai/bill-explainer.server.ts`, Lovable AI Gateway Responses API); uploads are never stored — keeps resident bills private and the API key server-side.
