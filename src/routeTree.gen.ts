@@ -10,12 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BillCheckRouteImport } from './routes/bill-check'
 import { Route as PledgeRouteImport } from './routes/pledge'
 import { Route as SurveyRouteImport } from './routes/survey'
+import { Route as ApiBillExplainRouteImport } from './routes/api/bill-explain'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BillCheckRoute = BillCheckRouteImport.update({
+  id: '/bill-check',
+  path: '/bill-check',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PledgeRoute = PledgeRouteImport.update({
@@ -28,35 +35,54 @@ const SurveyRoute = SurveyRouteImport.update({
   path: '/survey',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiBillExplainRoute = ApiBillExplainRouteImport.update({
+  id: '/api/bill-explain',
+  path: '/api/bill-explain',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/bill-check': typeof BillCheckRoute
   '/pledge': typeof PledgeRoute
   '/survey': typeof SurveyRoute
+  '/api/bill-explain': typeof ApiBillExplainRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/bill-check': typeof BillCheckRoute
   '/pledge': typeof PledgeRoute
   '/survey': typeof SurveyRoute
+  '/api/bill-explain': typeof ApiBillExplainRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/bill-check': typeof BillCheckRoute
   '/pledge': typeof PledgeRoute
   '/survey': typeof SurveyRoute
+  '/api/bill-explain': typeof ApiBillExplainRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/pledge' | '/survey'
+  fullPaths: '/' | '/bill-check' | '/pledge' | '/survey' | '/api/bill-explain'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/pledge' | '/survey'
-  id: '__root__' | '/' | '/pledge' | '/survey'
+  to: '/' | '/bill-check' | '/pledge' | '/survey' | '/api/bill-explain'
+  id:
+    | '__root__'
+    | '/'
+    | '/bill-check'
+    | '/pledge'
+    | '/survey'
+    | '/api/bill-explain'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BillCheckRoute: typeof BillCheckRoute
   PledgeRoute: typeof PledgeRoute
   SurveyRoute: typeof SurveyRoute
+  ApiBillExplainRoute: typeof ApiBillExplainRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -66,6 +92,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bill-check': {
+      id: '/bill-check'
+      path: '/bill-check'
+      fullPath: '/bill-check'
+      preLoaderRoute: typeof BillCheckRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pledge': {
@@ -82,13 +115,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SurveyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/bill-explain': {
+      id: '/api/bill-explain'
+      path: '/api/bill-explain'
+      fullPath: '/api/bill-explain'
+      preLoaderRoute: typeof ApiBillExplainRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BillCheckRoute: BillCheckRoute,
   PledgeRoute: PledgeRoute,
   SurveyRoute: SurveyRoute,
+  ApiBillExplainRoute: ApiBillExplainRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
