@@ -11,5 +11,6 @@
 
 - AI bill explainer streams from the `/api/bill-explain` server route (`src/lib/ai/bill-explainer.server.ts`, Lovable AI Gateway Responses API); uploads are never stored — keeps resident bills private and the API key server-side.
 - Keep navigation and footer in the shared site components so every content page has the same links and notices.
+- Keep detailed legal notices on the public Disclaimers route; the shared footer links to it and retains the short non-endorsement statement to keep notices consistent without repeating long text.
 - Keep Claude handoff guidance in root `CLAUDE.md`; it distinguishes current behavior from unapproved future work.
 - Build and Origins are separate public content routes with their own metadata; Build uses an explicit email-request flow until signup storage and delivery are connected, avoiding false enrollment confirmations.

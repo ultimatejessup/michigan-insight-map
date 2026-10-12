@@ -2,9 +2,12 @@
 
 Read `AGENTS.md` before making changes.
 
-## Requested updates
-- Main navigation includes Tracker, Survey, Pledge and Bill check.
-- Every page shares a footer with data privacy, content rights, contact information and the existing non-endorsement disclaimer.
+## Transfer state
+- Main navigation includes Tracker, Survey, Pledge, Bill Check and Build. The header no longer has the organizational byline.
+- Footer site links and contact come first; the legal link and exact non-endorsement line follow below a divider.
+- `/disclaimers` holds the detailed data privacy, terms of service and content rights notices. Keep the short non-endorsement line in the shared footer.
+- `/origins` explains the purpose, Liberation Caucus direction and Lovable-assisted development, without claiming a fully loaded tracker.
+- `/build` offers campaign, newsletter and SMS choices through an explicit email-request flow, not automated enrollment.
 - The contact email is **power@miutilitieswatch.com**. Preserve that exact spelling; it differs from the canonical website domain, **https://miutilitywatch.com**.
 
 ## Resident trust: AI bill reading
@@ -21,12 +24,25 @@ The owner is concerned that sending a personal utility bill to AI may discourage
 ## Current implementation
 - `src/components/site/site-header.tsx`: shared navigation, stacked at narrow widths.
 - `src/components/site/site-footer.tsx`: shared footer, including the supplied email.
+- `src/routes/disclaimers.tsx`: public notices page with unique metadata; basic informational notices, not lawyer-reviewed terms.
+- `src/routes/origins.tsx`: factual development and advocacy background.
+- `src/routes/build.tsx`: native form validation, update preferences and mailto draft. Visitors must send the draft; SMS is a request for opt-in instructions only.
 - `src/routes/bill-check.tsx`: upload page, streamed explanation, explicit Stop action and accuracy disclaimer.
 - `src/lib/ai/bill-explainer.server.ts`: validates file size/type and calls the Lovable AI Gateway Responses API; the API key stays server-side, provider storage is disabled and uploads are not persisted by the app.
 - `/api/bill-explain`: existing streaming endpoint. Do not add artificial generation deadlines.
 
 ## Limits and outstanding work
-- Footer wording is a basic site statement, not a comprehensive legal privacy policy or a verified licensing agreement.
+- Notices are basic site statements, not a comprehensive legal privacy policy, lawyer-reviewed terms or a verified licensing agreement. Provider data practices remain unverified.
+- Existing Supabase project `uxiacizacttosfxolajq` must be connected by the owner; do not create a replacement. Inspect and list tables/columns to the owner before writing data reads. Reuse existing tables; show any requested migration for review before applying it.
+- Tracker real data, story/pledge persistence and survey submission remain blocked by the connection. The survey also needs the owner’s question bank and page component; Turnstile needs configured keys.
+- Newsletter and SMS storage/delivery are not connected. Never replace the email-request notice with a “subscribed” confirmation until enrollment actually succeeds.
+- Never put server credentials in source or browser code. Preserve the server-side AI key boundary.
 - Do not invent a postal address, phone number, licensing terms or promises about AI-provider handling.
 - Existing database-dependent tracker data and submission flows remain blocked; see `roadmap.md`. These updates do not connect data or enable saving.
 - Preserve the existing civic branding, source requirements, signatory privacy and content guardrails.
+
+## Transfer verification checklist
+- Follow footer Origins and legal links and confirm their destination headings and metadata.
+- Confirm links/contact precede legal notices, including at narrow widths.
+- Check the Build form with no preference selected and with newsletter/SMS selected. The latter must prepare a draft, not claim delivered email or enrollment.
+- Check the latest preview build log and run relevant tests after future changes. A previous browser check surfaced a tracker map hydration warning; no map fix was included in these footer updates.

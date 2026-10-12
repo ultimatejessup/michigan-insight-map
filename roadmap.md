@@ -1,5 +1,10 @@
 # Michigan Essentials Watch — roadmap (restarted Oct 12)
 
+## Footer notices and Claude transfer
+- [x] Put links and contact first in the footer
+- [x] Move detailed privacy, terms of service and content rights to a linked Disclaimers page
+- [x] Update Claude transfer notes with current pages, behavior and remaining blockers
+
 ## Build signup and Origins
 - [x] Add Build signup page and header link, with campaign, newsletter and SMS choices
 - [x] Capitalize Bill Check and remove header byline

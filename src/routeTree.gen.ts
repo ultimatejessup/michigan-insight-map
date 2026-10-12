@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BillCheckRouteImport } from './routes/bill-check'
 import { Route as BuildRouteImport } from './routes/build'
+import { Route as DisclaimersRouteImport } from './routes/disclaimers'
 import { Route as OriginsRouteImport } from './routes/origins'
 import { Route as PledgeRouteImport } from './routes/pledge'
 import { Route as SurveyRouteImport } from './routes/survey'
@@ -30,6 +31,11 @@ const BillCheckRoute = BillCheckRouteImport.update({
 const BuildRoute = BuildRouteImport.update({
   id: '/build',
   path: '/build',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DisclaimersRoute = DisclaimersRouteImport.update({
+  id: '/disclaimers',
+  path: '/disclaimers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OriginsRoute = OriginsRouteImport.update({
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/bill-check': typeof BillCheckRoute
   '/build': typeof BuildRoute
+  '/disclaimers': typeof DisclaimersRoute
   '/origins': typeof OriginsRoute
   '/pledge': typeof PledgeRoute
   '/survey': typeof SurveyRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/bill-check': typeof BillCheckRoute
   '/build': typeof BuildRoute
+  '/disclaimers': typeof DisclaimersRoute
   '/origins': typeof OriginsRoute
   '/pledge': typeof PledgeRoute
   '/survey': typeof SurveyRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/bill-check': typeof BillCheckRoute
   '/build': typeof BuildRoute
+  '/disclaimers': typeof DisclaimersRoute
   '/origins': typeof OriginsRoute
   '/pledge': typeof PledgeRoute
   '/survey': typeof SurveyRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/bill-check'
     | '/build'
+    | '/disclaimers'
     | '/origins'
     | '/pledge'
     | '/survey'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/bill-check'
     | '/build'
+    | '/disclaimers'
     | '/origins'
     | '/pledge'
     | '/survey'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/bill-check'
     | '/build'
+    | '/disclaimers'
     | '/origins'
     | '/pledge'
     | '/survey'
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BillCheckRoute: typeof BillCheckRoute
   BuildRoute: typeof BuildRoute
+  DisclaimersRoute: typeof DisclaimersRoute
   OriginsRoute: typeof OriginsRoute
   PledgeRoute: typeof PledgeRoute
   SurveyRoute: typeof SurveyRoute
@@ -142,6 +155,13 @@ declare module '@tanstack/react-router' {
       path: '/build'
       fullPath: '/build'
       preLoaderRoute: typeof BuildRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/disclaimers': {
+      id: '/disclaimers'
+      path: '/disclaimers'
+      fullPath: '/disclaimers'
+      preLoaderRoute: typeof DisclaimersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/origins': {
@@ -179,6 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BillCheckRoute: BillCheckRoute,
   BuildRoute: BuildRoute,
+  DisclaimersRoute: DisclaimersRoute,
   OriginsRoute: OriginsRoute,
   PledgeRoute: PledgeRoute,
   SurveyRoute: SurveyRoute,
