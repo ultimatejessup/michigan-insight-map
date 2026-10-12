@@ -37,3 +37,4 @@ Guardrails: no ten-member proposal, no HB 4918, never invent data, party never p
 - [x] Pledge #1 copy (HB 5676-5677, five-member), disclaimer visible, Pledge #2 "coming soon" card with no details
 - [ ] Check for existing pledge table; reuse if present — BLOCKED on database connection
 - [ ] Signers list: name, office sought, date signed only; Turnstile-protected submit, status pending until staff approval
+- [x] Pre-launch review (read-only) — Oct 12
