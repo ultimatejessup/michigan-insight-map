@@ -1,9 +1,9 @@
 # Michigan Essentials Watch — roadmap (restarted Oct 12)
 
 ## Build signup and Origins
-- [ ] Add Build signup page and header link, with campaign, newsletter and SMS choices
-- [ ] Capitalize Bill Check and remove header byline
-- [ ] Add factual Origins page linked from the footer
+- [x] Add Build signup page and header link, with campaign, newsletter and SMS choices
+- [x] Capitalize Bill Check and remove header byline
+- [x] Add factual Origins page linked from the footer
 - [ ] Automated signup and update delivery — BLOCKED: existing project connection and signup/delivery service are not configured; provide an explicit email-request alternative
 
 - [x] Name "Michigan Essentials Watch" by Liberation Caucus; title "Michigan" black + rest blue, Zap badge

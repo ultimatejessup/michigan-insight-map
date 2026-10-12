@@ -1,13 +1,18 @@
+import { Link } from "@tanstack/react-router";
+
 export function SiteFooter() {
   return (
     <footer className="mt-16 bg-primary text-primary-foreground">
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-        <p className="font-display text-lg font-semibold">Michigan Essentials Watch</p>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <p className="font-display text-lg font-semibold">Michigan Essentials Watch</p>
+          <Link to="/origins" className="text-base font-semibold underline underline-offset-4 hover:text-accent">Origins</Link>
+        </div>
         <div className="mt-6 grid gap-6 md:grid-cols-[2fr_2fr_1fr]">
           <section aria-labelledby="footer-privacy">
             <h2 id="footer-privacy" className="font-display text-base font-semibold">Data privacy</h2>
             <p className="mt-2 text-base leading-relaxed">
-              Bill check is optional. Uploaded bills are sent to an AI service to create an
+              Bill Check is optional. Uploaded bills are sent to an AI service to create an
               explanation; they are not saved on this site or published. Cover your account
               number, name and address before uploading. You can use the tracker without
               uploading a bill.
