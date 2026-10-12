@@ -304,7 +304,7 @@ export function StoryForm() {
                 <span>Attach a photo of my bill with personal details blacked out.</span>
               </label>
               {shareBill ? <BillRedactor onChange={setBillFile} /> : null}
-              {errors.bill ? <p role="alert" className="text-sm text-destructive">{errors.bill}</p> : null}
+              {errors["bill"] ? <p role="alert" className="text-sm text-destructive">{errors["bill"]}</p> : null}
             </fieldset>
 
             <Button type="submit" variant="accent" size="lg">
