@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState, type FormEvent } from "react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { FileText, Loader2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -155,7 +156,7 @@ function BillCheckPage() {
         <section aria-live="polite" aria-label="Bill explanation" className="mt-8 rounded-lg border bg-card p-6 shadow-card">
           {output ? (
             <div className="bill-markdown">
-              <ReactMarkdown>{output}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{output}</ReactMarkdown>
             </div>
           ) : (
             <p className="flex items-center gap-2 text-muted-foreground">
