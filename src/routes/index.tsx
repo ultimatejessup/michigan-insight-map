@@ -38,6 +38,9 @@ function TrackerPage() {
             <Button asChild variant="outlinePrimary">
               <Link to="/pledge">Take the Candidate Pledge</Link>
             </Button>
+            <Button asChild variant="outlinePrimary">
+              <Link to="/bill-check">Explain my bill</Link>
+            </Button>
           </div>
         </div>
       </section>
