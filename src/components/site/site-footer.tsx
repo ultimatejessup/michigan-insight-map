@@ -26,8 +26,7 @@ export function SiteFooter() {
           </section>
         </div>
         <div className="mt-8 border-t border-primary-foreground/25 pt-6">
-          <Link to="/disclaimers" className="text-base underline underline-offset-4 hover:text-accent">Data privacy, terms of service & content rights</Link>
-        <p className="mt-4 text-base leading-relaxed">
+          <p className="text-base leading-relaxed">
           The Liberation Caucus is a non-partisan, non-profit organization. Nothing on this site is
           an endorsement of any candidate or party.
         </p>
