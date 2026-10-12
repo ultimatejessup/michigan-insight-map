@@ -20,3 +20,8 @@ Guardrails: no ten-member proposal, no HB 4918, never invent data, party never p
 - [ ] Source link per number from row source field; no source -> "Source pending", hide number
 - [ ] Per-tab coverage note (loaded / not loaded / last verified)
 - [ ] No computed aggregates — stored values only
+
+## Home story form (Oct 12) — BLOCKED on database connection
+- [ ] Check for existing stories table; reuse if present, else PROPOSE utility_stories for review before any migration
+- [ ] Form below tracker: consent checkbox + privacy sentence; public shows approved + consent_to_publish only; never email/phone/last name
+- [ ] Cloudflare Turnstile verified server-side; browser never inserts directly (needs Turnstile keys)
