@@ -2,9 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState, type FormEvent } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { FileText, Loader2, Upload } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { BillRedactor } from "@/components/site/bill-redactor";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/bill-check")({
@@ -19,7 +19,6 @@ export const Route = createFileRoute("/bill-check")({
 
 const ERROR_MARKER = "\u0000ERROR:";
 const MAX_BYTES = 10 * 1024 * 1024;
-const ACCEPT = "application/pdf,image/png,image/jpeg,image/webp";
 
 type Status = "idle" | "working" | "done" | "error" | "stopped";
 
@@ -33,7 +32,7 @@ function BillCheckPage() {
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!file) {
-      setError("Choose a bill to upload first.");
+      setError("Choose a photo of your bill, cover your personal details, and confirm.");
       return;
     }
     if (file.size > MAX_BYTES) {
@@ -91,46 +90,21 @@ function BillCheckPage() {
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
       <h1 className="text-3xl font-extrabold text-primary sm:text-4xl">Understand your utility bill</h1>
       <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-        Upload a photo or PDF of your electric, gas, water or internet bill. Our AI-powered
+        Upload a photo of your electric, gas, water or internet bill. Our AI-powered
         explainer walks through each charge in plain language and flags anything you may want to
         ask your provider about.
       </p>
 
       <form onSubmit={onSubmit} className="mt-8 rounded-lg border bg-card p-6 shadow-card">
-        <Label htmlFor="bill" className="text-base font-semibold">
-          Your bill (PDF, JPG, PNG or WebP, up to 10 MB)
-        </Label>
-        <label
-          htmlFor="bill"
-          className="mt-3 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-input bg-surface px-4 py-8 text-center hover:border-primary"
-        >
-          {file ? (
-            <>
-              <FileText className="h-8 w-8 text-primary" aria-hidden="true" />
-              <span className="font-semibold">{file.name}</span>
-              <span className="text-sm text-muted-foreground">Click to choose a different file</span>
-            </>
-          ) : (
-            <>
-              <Upload className="h-8 w-8 text-primary" aria-hidden="true" />
-              <span className="font-semibold">Choose a file or take a photo</span>
-              <span className="text-sm text-muted-foreground">Make sure every charge is readable</span>
-            </>
-          )}
-        </label>
-        <input
-          id="bill"
-          name="bill"
-          type="file"
-          accept={ACCEPT}
-          className="sr-only"
-          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          disabled={working}
-        />
+        <p className="text-base font-semibold">Your bill (photo or screenshot, up to 10 MB)</p>
+        <div className="mt-3">
+          <BillRedactor onChange={setFile} disabled={working} />
+        </div>
 
         <p className="mt-4 text-sm text-muted-foreground">
-          Privacy: your bill is sent to our AI service only to create this explanation. It is not
-          saved on this site. You can cover your account number before uploading.
+          Privacy: your bill is sent to our AI service only to create this explanation. Only the
+          blacked-out copy is sent, and it is not saved on this site. Double-check that nothing
+          personal is still visible.
         </p>
 
         <div className="mt-5 flex flex-wrap gap-3">
