@@ -38,3 +38,4 @@ Guardrails: no ten-member proposal, no HB 4918, never invent data, party never p
 - [ ] Check for existing pledge table; reuse if present — BLOCKED on database connection
 - [ ] Signers list: name, office sought, date signed only; Turnstile-protected submit, status pending until staff approval
 - [x] Pre-launch review (read-only) — Oct 12
+- [x] Bill explainer (/bill-check): upload bill, AI explains line items + flags charges (Oct 12)
