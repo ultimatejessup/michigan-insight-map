@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { BillRedactor } from "@/components/site/bill-redactor";
 
 const STORY_MAX = 1500;
 
@@ -35,8 +34,6 @@ export function StoryForm() {
   const [consentUpdates, setConsentUpdates] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
-  const [shareBill, setShareBill] = useState(false);
-  const [billFile, setBillFile] = useState<File | null>(null);
 
   const toggleIssue = (issue: string) =>
     setIssues((prev) =>
@@ -73,15 +70,8 @@ export function StoryForm() {
       return;
     }
 
-    if (shareBill && !billFile) {
-      setErrors({ bill: "Cover your personal details and confirm, or uncheck sharing your bill." });
-      toast.error("Please finish covering your bill or remove it.");
-      return;
-    }
     setErrors({});
     setSubmitted(true);
-    setShareBill(false);
-    setBillFile(null);
     form.reset();
     setStory("");
     setIssues([]);
@@ -295,17 +285,6 @@ export function StoryForm() {
                 <span>Keep me updated on this campaign.</span>
               </label>
             </div>
-
-            <fieldset className="space-y-3 rounded-md border p-4">
-              <legend className="px-1 text-sm font-semibold">Share your bill (optional)</legend>
-              <label className="flex items-start gap-3 text-sm">
-                <Checkbox className="mt-0.5" checked={shareBill}
-                  onCheckedChange={(v) => { setShareBill(v === true); if (v !== true) setBillFile(null); }} />
-                <span>Attach a photo of my bill with personal details blacked out.</span>
-              </label>
-              {shareBill ? <BillRedactor onChange={setBillFile} /> : null}
-              {errors["bill"] ? <p role="alert" className="text-sm text-destructive">{errors["bill"]}</p> : null}
-            </fieldset>
 
             <Button type="submit" variant="accent" size="lg">
               Submit my story
