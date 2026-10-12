@@ -192,18 +192,13 @@ function PledgePage() {
         <div className="mt-3 rounded-lg border border-dashed bg-surface p-6">
           <p className="font-semibold">No signers published yet.</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Approved signers will appear here with their name, office, jurisdiction and optional
-            statement.
+            Approved signers will appear here with their name, office sought and date signed.
           </p>
         </div>
       </section>
 
-      <aside className="mt-12 rounded-lg bg-muted p-5 text-muted-foreground">
-        <p className="font-semibold text-foreground">Pledge #2 is coming soon.</p>
-        <p className="mt-1 text-sm">
-          Additional pledges on the structure of the commission will be announced after this year's
-          legislative session.
-        </p>
+      <aside className="mt-12 rounded-lg bg-muted p-5">
+        <p className="font-semibold text-foreground">Pledge #2: coming soon</p>
       </aside>
     </div>
   );

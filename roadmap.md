@@ -32,3 +32,8 @@ Guardrails: no ten-member proposal, no HB 4918, never invent data, party never p
 - [ ] Turnstile (VITE_TURNSTILE_SITE_KEY), submit disabled until token, reset after failed submit
 - [ ] submit-utility-survey function verifies token, calls save function via service role; CORS limited to miutilitywatch.com, www, preview
 - [ ] Migration SQL: revoke execute on save fn from anon/authenticated/public, grant to service_role — SHOW FOR REVIEW, do not apply
+
+## Pledge (Oct 12)
+- [x] Pledge #1 copy (HB 5676-5677, five-member), disclaimer visible, Pledge #2 "coming soon" card with no details
+- [ ] Check for existing pledge table; reuse if present — BLOCKED on database connection
+- [ ] Signers list: name, office sought, date signed only; Turnstile-protected submit, status pending until staff approval
