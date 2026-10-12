@@ -19,7 +19,7 @@ The owner is concerned that sending a personal utility bill to AI may discourage
 - Encourage residents to cover account numbers, names and addresses before uploading.
 - Keep the AI accuracy warning and the ability to stop generation.
 - Do not promise anonymity: the uploaded document can contain personal information.
-- Possible future work for owner review: a no-upload guide to common charges, or local redaction before upload. Neither is implemented or approved by this request.
+- Local redaction before upload is implemented (owner-approved, Oct 12): `src/components/site/bill-redactor.tsx` — residents black out details on-device; only the redacted PNG is sent. PDFs must be screenshotted. Story-form bill attachments are not saved yet (no storage connected).
 
 ## Current implementation
 - `src/components/site/site-header.tsx`: shared navigation, stacked at narrow widths.

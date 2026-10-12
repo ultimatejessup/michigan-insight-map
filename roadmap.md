@@ -55,3 +55,8 @@ Guardrails: no ten-member proposal, no HB 4918, never invent data, party never p
 - [x] Add Bill check to main navigation without crowding narrow screens
 - [x] Add shared footer privacy statement, content rights and power@miutilitieswatch.com contact
 - [x] Create Claude handoff notes documenting the concern about AI bill-reading trust, without concealing AI use
+
+## Bill sharing with redaction (Oct 12)
+- [x] In-browser redaction tool (black boxes, confirm step); only redacted copy leaves the device
+- [x] Bill Check uses redacted photo; story form has optional redacted bill attachment
+- [ ] Store attached bills with stories — BLOCKED: database/storage connection
