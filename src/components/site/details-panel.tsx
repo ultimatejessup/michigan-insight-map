@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { utilityDatasets, type UtilityDataset } from "@/data/utility-data";
 import { SourceLine } from "./source-line";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,12 +8,12 @@ function ComingSoon({ dataset }: { dataset: UtilityDataset }) {
     <div className="rounded-lg border border-dashed bg-surface p-6">
       <p className="font-display text-base font-bold text-primary">Data coming soon</p>
       <p className="mt-2 text-sm text-muted-foreground">{dataset.comingSoonNote}</p>
-      <a
-        href="#share-your-story"
+      <Link
+        to="/survey"
         className="mt-4 inline-flex rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:bg-accent-strong hover:text-primary-foreground"
       >
         Tell us what you pay
-      </a>
+      </Link>
       <SourceLine source={dataset.source} />
     </div>
   );
