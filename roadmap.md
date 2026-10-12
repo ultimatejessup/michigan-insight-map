@@ -1,26 +1,40 @@
-# Michigan Utility Rate Tracker — roadmap
+# Michigan Essentials Watch — roadmap (restarted Oct 12)
 
-- [x] Design system (blue/orange/white, WCAG AA), fonts
-- [x] Sticky header + footer with Liberation Caucus language
-- [ ] Home `/`: slim hero (<220px desktop)
-- [ ] Home: two-column tracker — Michigan county choropleth left (~45%, sticky), tabbed details right (~55%, sticky); stacked with 300px map on mobile
-- [ ] Map: blue shades by metric (energy burden default / average rate toggle), orange selected county, hover tooltip, county select dropdown, legend
-- [ ] Details tabs: Electric, Natural Gas (monthly line chart May 2018–Aug 2026, utility filter, 3 stat cards, energy burden card), Water & Broadband "Data coming soon"
-- [ ] Source line with link on every chart/stat card
-- [ ] Section C: Share Your Story form (`#share-your-story`)
-- [ ] `/pledge`: Candidate Pledge page + form (Section D)
-- [ ] Head metadata per route
+- [x] Name "Michigan Essentials Watch" by Liberation Caucus; title "Michigan" black + rest blue, Zap badge
+- [x] Canonical + OG on https://miutilitywatch.com per route
+- [x] Routes: / tracker, /survey, /pledge; header nav; footer non-endorsement line
+- [x] Tracker: map left / details right, no invented data ("coming soon")
+- [x] Survey form and Pledge page UI (not saving yet)
+- [ ] Connect existing Supabase project uxiacizacttosfxolajq — BLOCKED: user must connect it (Cloud view → "Connect it here", or Connectors → Supabase)
+- [ ] After connecting: list existing tables + columns for the user, get approval, then wire reads (anon key only)
 
-Blocked / later:
-- Real data + stories/pledges persistence — user chose "pages first, data later"; no database connected yet.
+Guardrails: no ten-member proposal, no HB 4918, never invent data, party never public, every figure sourced.
 
-## Content guardrails (must hold everywhere)
-- No HB 4918 / broadband bill citations; broadband = data tab + story-form policy statement only.
-- No conflation of HB 5676-5677 with the Caucus's own proposal; Caucus proposal off-site for now.
-- Never invent data -> "coming soon" state; every data point shows a source link.
-- Party never shown publicly.
+## Tracker data spec (Oct 12) — BLOCKED on database connection
+- [ ] Map from geographies (level='county', Michigan), color by metric, legend, "Reset to statewide" button
+- [ ] Electric: monthly rates May 2018–Aug 2026 (never annual), DTE vs Consumers, mpsc_rate_actions, state_rate_comparison
+- [ ] Natural Gas: show existing data or "Data not yet loaded" + planned source
+- [ ] Water: water_sewage_rates + flag "Water rates in Michigan are generally not set by the MPSC."
+- [ ] Broadband: FCC BDC, headline excludes satellite / "Any Technology", state exclusion
+- [ ] energy_burden (DOE LEAD) by county; energy_burden_by_race as separate card, never joined to map/charts
+- [ ] Source link per number from row source field; no source -> "Source pending", hide number
+- [ ] Per-tab coverage note (loaded / not loaded / last verified)
+- [ ] No computed aggregates — stored values only
 
-## Added later
-- [ ] Rename site to "MI Essentials" (wordmark, titles, metadata)
-- [ ] Section C story form: utility type, company, city/county (83 counties), story w/ 1500 counter, bill, issues multi-select, name/anonymous, email, consents, honeypot, recent stories grid + filter, empty state
-- [ ] Pledge page: intro, pledge box w/ blue left rule, light-blue non-endorsement box, full field set, signers wall w/ count + filter/search, Pledge #2 teaser
+## Home story form (Oct 12) — BLOCKED on database connection
+- [ ] Check for existing stories table; reuse if present, else PROPOSE utility_stories for review before any migration
+- [ ] Form below tracker: consent checkbox + privacy sentence; public shows approved + consent_to_publish only; never email/phone/last name
+- [ ] Cloudflare Turnstile verified server-side; browser never inserts directly (needs Turnstile keys)
+
+## Survey (Oct 12) — BLOCKED
+- [ ] Use existing question-bank file + survey page component — BLOCKED: neither exists in this project; need the files from user
+- [ ] Tables utility_survey_participants + utility_survey_responses (participant_id nullable); bill impact & cost-coping only, NO commission-reform questions
+- [ ] Turnstile (VITE_TURNSTILE_SITE_KEY), submit disabled until token, reset after failed submit
+- [ ] submit-utility-survey function verifies token, calls save function via service role; CORS limited to miutilitywatch.com, www, preview
+- [ ] Migration SQL: revoke execute on save fn from anon/authenticated/public, grant to service_role — SHOW FOR REVIEW, do not apply
+
+## Pledge (Oct 12)
+- [x] Pledge #1 copy (HB 5676-5677, five-member), disclaimer visible, Pledge #2 "coming soon" card with no details
+- [ ] Check for existing pledge table; reuse if present — BLOCKED on database connection
+- [ ] Signers list: name, office sought, date signed only; Turnstile-protected submit, status pending until staff approval
+- [x] Pre-launch review (read-only) — Oct 12

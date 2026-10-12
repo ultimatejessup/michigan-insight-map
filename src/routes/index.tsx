@@ -1,24 +1,62 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { MichiganMap } from "@/components/site/michigan-map";
+import { DetailsPanel } from "@/components/site/details-panel";
+import { Button } from "@/components/ui/button";
+import type { MapMetricKey } from "@/data/utility-data";
+import { pageHead } from "@/lib/seo";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () =>
+    pageHead(
+      "/",
+      "Michigan Essentials Watch — Utility Rate Tracker",
+      "See what Michigan households pay for electric, natural gas, water and broadband, county by county.",
+    ),
+  component: TrackerPage,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function TrackerPage() {
+  const [county, setCounty] = useState("Wayne");
+  const [metric, setMetric] = useState<MapMetricKey>("burden");
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <>
+      <section className="section-tint border-b">
+        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:py-7">
+          <h1 className="text-2xl font-extrabold text-primary sm:text-3xl">
+            What are you paying, and who decides?
+          </h1>
+          <p className="mt-2 max-w-3xl text-base text-muted-foreground">
+            Track what Michigan households pay for essential utilities, county by county. Then
+            tell us your experience and ask candidates where they stand.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Button asChild variant="accent">
+              <Link to="/survey">Take the Survey</Link>
+            </Button>
+            <Button asChild variant="outlinePrimary">
+              <Link to="/pledge">Take the Candidate Pledge</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <section aria-label="Rate tracker" className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+        <div className="grid gap-6 lg:grid-cols-[45fr_55fr] lg:items-start">
+          <div className="lg:sticky lg:top-24">
+            <MichiganMap
+              selected={county}
+              onSelect={setCounty}
+              metric={metric}
+              onMetricChange={setMetric}
+            />
+          </div>
+          <div className="lg:sticky lg:top-24">
+            <DetailsPanel county={county} />
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
