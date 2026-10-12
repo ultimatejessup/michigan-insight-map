@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BillCheckRouteImport } from './routes/bill-check'
+import { Route as BuildRouteImport } from './routes/build'
+import { Route as OriginsRouteImport } from './routes/origins'
 import { Route as PledgeRouteImport } from './routes/pledge'
 import { Route as SurveyRouteImport } from './routes/survey'
 import { Route as ApiBillExplainRouteImport } from './routes/api/bill-explain'
@@ -23,6 +25,16 @@ const IndexRoute = IndexRouteImport.update({
 const BillCheckRoute = BillCheckRouteImport.update({
   id: '/bill-check',
   path: '/bill-check',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuildRoute = BuildRouteImport.update({
+  id: '/build',
+  path: '/build',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OriginsRoute = OriginsRouteImport.update({
+  id: '/origins',
+  path: '/origins',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PledgeRoute = PledgeRouteImport.update({
@@ -44,6 +56,8 @@ const ApiBillExplainRoute = ApiBillExplainRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/bill-check': typeof BillCheckRoute
+  '/build': typeof BuildRoute
+  '/origins': typeof OriginsRoute
   '/pledge': typeof PledgeRoute
   '/survey': typeof SurveyRoute
   '/api/bill-explain': typeof ApiBillExplainRoute
@@ -51,6 +65,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/bill-check': typeof BillCheckRoute
+  '/build': typeof BuildRoute
+  '/origins': typeof OriginsRoute
   '/pledge': typeof PledgeRoute
   '/survey': typeof SurveyRoute
   '/api/bill-explain': typeof ApiBillExplainRoute
@@ -59,19 +75,37 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/bill-check': typeof BillCheckRoute
+  '/build': typeof BuildRoute
+  '/origins': typeof OriginsRoute
   '/pledge': typeof PledgeRoute
   '/survey': typeof SurveyRoute
   '/api/bill-explain': typeof ApiBillExplainRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/bill-check' | '/pledge' | '/survey' | '/api/bill-explain'
+  fullPaths:
+    | '/'
+    | '/bill-check'
+    | '/build'
+    | '/origins'
+    | '/pledge'
+    | '/survey'
+    | '/api/bill-explain'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/bill-check' | '/pledge' | '/survey' | '/api/bill-explain'
+  to:
+    | '/'
+    | '/bill-check'
+    | '/build'
+    | '/origins'
+    | '/pledge'
+    | '/survey'
+    | '/api/bill-explain'
   id:
     | '__root__'
     | '/'
     | '/bill-check'
+    | '/build'
+    | '/origins'
     | '/pledge'
     | '/survey'
     | '/api/bill-explain'
@@ -80,6 +114,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BillCheckRoute: typeof BillCheckRoute
+  BuildRoute: typeof BuildRoute
+  OriginsRoute: typeof OriginsRoute
   PledgeRoute: typeof PledgeRoute
   SurveyRoute: typeof SurveyRoute
   ApiBillExplainRoute: typeof ApiBillExplainRoute
@@ -99,6 +135,20 @@ declare module '@tanstack/react-router' {
       path: '/bill-check'
       fullPath: '/bill-check'
       preLoaderRoute: typeof BillCheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/build': {
+      id: '/build'
+      path: '/build'
+      fullPath: '/build'
+      preLoaderRoute: typeof BuildRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/origins': {
+      id: '/origins'
+      path: '/origins'
+      fullPath: '/origins'
+      preLoaderRoute: typeof OriginsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pledge': {
@@ -128,6 +178,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BillCheckRoute: BillCheckRoute,
+  BuildRoute: BuildRoute,
+  OriginsRoute: OriginsRoute,
   PledgeRoute: PledgeRoute,
   SurveyRoute: SurveyRoute,
   ApiBillExplainRoute: ApiBillExplainRoute,
