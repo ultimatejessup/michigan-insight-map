@@ -25,3 +25,10 @@ Guardrails: no ten-member proposal, no HB 4918, never invent data, party never p
 - [ ] Check for existing stories table; reuse if present, else PROPOSE utility_stories for review before any migration
 - [ ] Form below tracker: consent checkbox + privacy sentence; public shows approved + consent_to_publish only; never email/phone/last name
 - [ ] Cloudflare Turnstile verified server-side; browser never inserts directly (needs Turnstile keys)
+
+## Survey (Oct 12) — BLOCKED
+- [ ] Use existing question-bank file + survey page component — BLOCKED: neither exists in this project; need the files from user
+- [ ] Tables utility_survey_participants + utility_survey_responses (participant_id nullable); bill impact & cost-coping only, NO commission-reform questions
+- [ ] Turnstile (VITE_TURNSTILE_SITE_KEY), submit disabled until token, reset after failed submit
+- [ ] submit-utility-survey function verifies token, calls save function via service role; CORS limited to miutilitywatch.com, www, preview
+- [ ] Migration SQL: revoke execute on save fn from anon/authenticated/public, grant to service_role — SHOW FOR REVIEW, do not apply
