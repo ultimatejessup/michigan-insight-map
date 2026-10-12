@@ -112,7 +112,7 @@ export async function handleBillExplain(request: Request): Promise<Response> {
             type: "file",
             data: bytes,
             mediaType: file.type,
-            filename: file.type === "application/pdf" ? "bill.pdf" : undefined,
+            ...(file.type === "application/pdf" ? { filename: "bill.pdf" } : {}),
           },
         ],
       },
