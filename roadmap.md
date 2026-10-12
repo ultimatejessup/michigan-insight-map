@@ -3,6 +3,7 @@
 ## Footer notices and Claude transfer
 - [x] Put links and contact first in the footer
 - [x] Move detailed privacy, terms of service and content rights to a linked Disclaimers page
+- [x] Include the Disclaimers link with the other footer links
 - [x] Update Claude transfer notes with current pages, behavior and remaining blockers
 
 ## Build signup and Origins

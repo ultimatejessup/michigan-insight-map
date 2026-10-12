@@ -13,6 +13,7 @@ export function SiteFooter() {
             <Link to="/bill-check" className="underline underline-offset-4 hover:text-accent">Bill Check</Link>
             <Link to="/build" className="underline underline-offset-4 hover:text-accent">Build</Link>
             <Link to="/origins" className="underline underline-offset-4 hover:text-accent">Origins</Link>
+            <Link to="/disclaimers" className="underline underline-offset-4 hover:text-accent">Disclaimers</Link>
           </nav>
           <section aria-labelledby="footer-contact">
             <h2 id="footer-contact" className="font-display text-base font-semibold">Contact</h2>
@@ -25,8 +26,7 @@ export function SiteFooter() {
           </section>
         </div>
         <div className="mt-8 border-t border-primary-foreground/25 pt-6">
-          <Link to="/disclaimers" className="text-base underline underline-offset-4 hover:text-accent">Data privacy, terms of service & content rights</Link>
-        <p className="mt-4 text-base leading-relaxed">
+          <p className="text-base leading-relaxed">
           The Liberation Caucus is a non-partisan, non-profit organization. Nothing on this site is
           an endorsement of any candidate or party.
         </p>
