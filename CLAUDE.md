@@ -14,12 +14,12 @@ Read `AGENTS.md` before making changes.
 The owner is concerned that sending a personal utility bill to AI may discourage residents from using Bill check. This is a concern to address, not permission to hide AI involvement or change providers.
 
 - Keep Bill check optional; the tracker and other pages remain usable without uploading a bill.
-- Clearly disclose AI processing before upload, in plain language.
-- Explain that uploads are not stored by this site or published. Do not extend that claim to provider retention, model training or deletion guarantees without verified provider terms.
-- Encourage residents to cover account numbers, names and addresses before uploading.
+- Clearly disclose AI processing before anything is sent, in plain language.
+- Explain that the bill text is not stored by this site or published. Do not extend that claim to provider retention, model training or deletion guarantees without verified provider terms.
+- Encourage residents to review the text and remove any personal details the automatic hiding missed.
 - Keep the AI accuracy warning and the ability to stop generation.
-- Do not promise anonymity: the uploaded document can contain personal information.
-- On-device redaction was built then removed at the owner's request (Oct 12). Uploads are plain photos/PDFs; the page only encourages residents to cover personal details themselves. Story-form bill attachments were removed with it.
+- Do not promise anonymity: the reviewed text can still contain personal information.
+- On-device redaction was removed on Oct 12 because the process was not clear, and restored on Oct 26 with a clearer three-step flow: (1) choose the bill, (2) review the extracted text, (3) get the explanation. The photo/PDF never leaves the device; the browser extracts text (pdf.js, or self-hosted Tesseract OCR from `/ocr` for photos and scanned PDFs), hides personal details, and the resident can edit the text before pressing "Send this text". Only that reviewed text is sent. Keep the "Nothing has been sent yet" notice, the [REDACTED] summary (never list the hidden values) and the pre-send check. Redaction is best-effort and the page must not claim it is complete. City, state and ZIP are intentionally kept. Story-form bill attachments stay removed.
 
 ## Current implementation
 - `src/components/site/site-header.tsx`: shared navigation, stacked at narrow widths.
@@ -27,8 +27,10 @@ The owner is concerned that sending a personal utility bill to AI may discourage
 - `src/routes/disclaimers.tsx`: public notices page with unique metadata; basic informational notices, not lawyer-reviewed terms.
 - `src/routes/origins.tsx`: factual development and advocacy background.
 - `src/routes/build.tsx`: native form validation, update preferences and mailto draft. Visitors must send the draft; SMS is a request for opt-in instructions only.
-- `src/routes/bill-check.tsx`: upload page, streamed explanation, explicit Stop action and accuracy disclaimer.
-- `src/lib/ai/bill-explainer.server.ts`: validates file size/type and calls the Lovable AI Gateway Responses API; the API key stays server-side, provider storage is disabled and uploads are not persisted by the app.
+- `src/routes/bill-check.tsx`: three-step page (choose, review/edit extracted text, explanation), explicit Stop action and accuracy disclaimer.
+- `src/lib/bill/redact.ts`: pure on-device redaction (account/ID numbers, addresses, names, phones, emails, resident-supplied words). `src/lib/bill/extract.ts`: browser-only extraction; do not rename it `*.client.*` (TanStack import protection blocks that). `tests/redact.test.ts`: run with `bun test tests/redact.test.ts`.
+- `public/ocr/`: self-hosted OCR worker, core and English model so no third-party site is contacted. Keep absolute URLs when changing OCR paths (the worker runs from a blob URL).
+- `src/lib/ai/bill-explainer.server.ts`: accepts JSON `{ text }` (reviewed bill text, 40-30,000 characters), no files, and calls the Lovable AI Gateway Responses API; the API key (`LOVABLE_API_KEY`) stays server-side, provider storage is disabled and nothing is persisted by the app.
 - `/api/bill-explain`: existing streaming endpoint. Do not add artificial generation deadlines.
 
 ## Limits and outstanding work

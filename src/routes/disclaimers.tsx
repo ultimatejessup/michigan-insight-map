@@ -19,8 +19,8 @@ function DisclaimersPage() {
       <div className="mt-8 space-y-8 border-t pt-8 text-base leading-relaxed">
         <section aria-labelledby="privacy-heading">
           <h2 id="privacy-heading" className="font-display text-2xl font-bold">Data privacy</h2>
-          <p className="mt-3">Bill Check is optional. Uploaded bills are sent to an AI service to create an explanation; they are not saved on this site or published. Cover your account number, name and address before uploading. You can use the tracker without uploading a bill.</p>
-          <p className="mt-3">This describes how the site handles bill uploads. It is not a guarantee about the AI provider’s retention or training practices. Do not upload information you are uncomfortable sharing with an AI service.</p>
+          <p className="mt-3">Bill Check is optional. Your photo or PDF is read on your own device and is never uploaded. Personal details such as account numbers and addresses are hidden automatically, you review and can edit the text, and only that text is sent to an AI service to create an explanation. It is not saved on this site or published. Automatic hiding is not perfect, so check the text before you send it. You can use the tracker without using Bill Check.</p>
+          <p className="mt-3">This describes how the site handles bill uploads. It is not a guarantee about the AI provider’s retention or training practices. Do not send information you are uncomfortable sharing with an AI service.</p>
           <p className="mt-3">Build signup requests are currently handled by email. The form prepares an email draft; the request reaches the team only when you send it. Contact details are not published on this site. A request for SMS instructions does not enroll you in texts.</p>
           <p className="mt-3">For privacy questions, contact <a href="mailto:power@miutilitieswatch.com" className="break-all font-semibold text-primary underline underline-offset-4">power@miutilitieswatch.com</a>.</p>
         </section>
