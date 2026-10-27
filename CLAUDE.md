@@ -6,7 +6,7 @@ Read `AGENTS.md` before making changes.
 - Main navigation includes Tracker, Survey, Pledge, Bill Check and Build. The header no longer has the organizational byline.
 - Footer site links include Disclaimers together with Tracker, Survey, Pledge, Bill Check, Build and Origins, with contact beside them; the exact non-endorsement line sits below a divider.
 - `/disclaimers` holds the detailed data privacy, terms of service and content rights notices. Keep the short non-endorsement line in the shared footer.
-- `/origins` explains the purpose, Liberation Caucus direction and Lovable-assisted development, without claiming a fully loaded tracker.
+- `/origins` explains the tracker, the Liberation Caucus (approved mission wording) and AI-assisted development without naming the tool, and does not claim a fully loaded tracker. Do not add claims about Michigan Forward or national wage-burden work until the owner supplies facts.
 - `/build` offers campaign, newsletter and SMS choices through an explicit email-request flow, not automated enrollment.
 - The contact email is **power@miutilitieswatch.com**. Preserve that exact spelling; it differs from the canonical website domain, **https://miutilitywatch.com**.
 
