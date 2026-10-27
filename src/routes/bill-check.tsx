@@ -164,8 +164,13 @@ function BillCheckPage() {
     } catch (err) {
       console.error("bill read failed", err);
       setStep("choose");
+      // Technical reason only (error type and message); never any bill text.
+      const reason =
+        err instanceof Error && err.message !== "no-text"
+          ? ` (Technical detail: ${err.name}: ${err.message.slice(0, 120)})`
+          : "";
       setError(
-        "We couldn't read text from that file on this device. Try a clearer photo or a PDF, or choose “Paste the text instead”.",
+        `We couldn't read text from that file on this device. Try a clearer photo or a PDF, or choose “Paste the text instead”.${reason}`,
       );
     }
   };
