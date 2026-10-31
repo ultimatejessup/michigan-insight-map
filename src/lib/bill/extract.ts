@@ -124,6 +124,27 @@ async function ocrCanvases(
   }
 }
 
+/**
+ * Read a page's text by hand. pdf.js's own getTextContent() loops over the stream with
+ * `for await`, which Safari on iPhone does not support for streams.
+ */
+async function readTextContent(page: {
+  streamTextContent: () => ReadableStream<{ items: unknown[] }>;
+}): Promise<{ items: any[] }> {
+  const reader = page.streamTextContent().getReader();
+  const items: unknown[] = [];
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      for (const item of value.items) items.push(item);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  return { items };
+}
+
 async function extractPdf(file: File, onProgress?: Progress): Promise<ExtractedBill> {
   onProgress?.("Opening your PDF on this device…");
   installBrowserFallbacks();
@@ -141,7 +162,7 @@ async function extractPdf(file: File, onProgress?: Progress): Promise<ExtractedB
   const pageTexts: string[] = [];
   for (let p = 1; p <= pages; p++) {
     const page = await doc.getPage(p);
-    const content = await page.getTextContent();
+    const content = await readTextContent(page);
     const items: PositionedItem[] = [];
     for (const item of content.items) {
       if (!("str" in item)) continue;
