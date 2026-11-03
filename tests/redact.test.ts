@@ -141,3 +141,18 @@ describe("last-chance check", () => {
     expect(countRemainingPii("My name is Sampson", ["Sampson"])).toBe(1);
   });
 });
+
+describe("statement and document IDs", () => {
+  test("hides a long number that follows a hyphen or a question mark", () => {
+    const text = "eb-20241104-?-22138-555000111222  Page 1 of 3\nReturn upper portion with your payment  555000111222";
+    const out = redactBillText(text).text;
+    expect(out).not.toContain("555000111222");
+    expect(countRemainingPii(out)).toEqual(expect.anything());
+  });
+  test("still keeps ISO dates, amounts and usage", () => {
+    const text = "Service Period 2024-10-01 - 2024-11-01  496 KWH @ 0.061090  30.30  Tax Credit B  -0.59";
+    const out = redactBillText(text).text;
+    expect(out).toBe(text);
+  });
+});
+

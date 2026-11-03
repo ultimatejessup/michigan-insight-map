@@ -67,7 +67,9 @@ const ACCOUNT_WORD_RE =
   /\b((?:account|acct)[ \t]*[:#][ \t]*)((?=[A-Z0-9-]*\d)[A-Z0-9][A-Z0-9-]{3,24}(?:[ \t]\d{3,}(?:-\d+)*)*)/gi;
 
 /** Long unlabeled digit runs: 9+ digits in a row, or 3+ dash-joined digit groups with 9+ digits. */
-const LONG_DIGITS_RE = /(?<![\d$.,-])(?:\d{9,}|\d{2,}(?:-\d{2,}){2,})(?![\d,-])/g;
+// A run of 9+ digits may follow a hyphen (statement IDs like eb-20241104-?-22138-200221799580);
+// dash-joined groups may not (so "1-800-477-4747" is left to the phone rules).
+const LONG_DIGITS_RE = /(?<![\d$.,])(?:\d{9,}|(?<!\d-)\d{2,}(?:-\d{2,}){2,})(?![\d,-])/g;
 
 const LABELED_NAME_RE =
   /\b((?:customer name|account name|account holder|name on account|bill(?:ed)? to|service for|prepared for|statement for)[ \t]*[:-][ \t]*)([^\n]{2,60}?)(?=[ \t]{2,}|\n|$)/gi;
