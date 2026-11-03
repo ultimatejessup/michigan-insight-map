@@ -17,7 +17,8 @@ export const Route = createFileRoute("/")({
 });
 
 function TrackerPage() {
-  const [county, setCounty] = useState("Wayne");
+  // null = statewide view (no county selected)
+  const [county, setCounty] = useState<string | null>(null);
   const [metric, setMetric] = useState<MapMetricKey>("burden");
 
   return (
@@ -28,8 +29,8 @@ function TrackerPage() {
             What are you paying, and who decides?
           </h1>
           <p className="mt-2 max-w-3xl text-base text-muted-foreground">
-            Track what Michigan households pay for essential utilities, county by county. Then
-            tell us your experience and ask candidates where they stand.
+            Track what Michigan households pay for essential utilities, county by county. Then tell
+            us your experience and ask candidates where they stand.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <Button asChild variant="accent">

@@ -22,21 +22,21 @@ function ComingSoon({ dataset }: { dataset: UtilityDataset }) {
 function StatCard({ label, dataset }: { label: string; dataset: UtilityDataset }) {
   return (
     <div className="rounded-lg border bg-card p-4">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
       <p className="mt-1 font-display text-xl font-bold text-primary">Coming soon</p>
       <SourceLine source={dataset.source} />
     </div>
   );
 }
 
-export function DetailsPanel({ county }: { county: string }) {
+export function DetailsPanel({ county }: { county: string | null }) {
+  const place = county === null ? "Michigan (statewide)" : `${county} County`;
   return (
     <div className="rounded-lg border bg-card p-4 shadow-card sm:p-6">
       <p className="text-base font-semibold text-foreground">
-        In {county} County, the share of household income spent on energy is not loaded yet —
-        the energy burden figure will appear here once the data source is connected.
+        {county === null
+          ? "Showing all of Michigan. The statewide share of household income spent on energy is not loaded yet — it will appear here once the data source is connected. Select a county on the map to see local figures."
+          : `In ${county} County, the share of household income spent on energy is not loaded yet — the energy burden figure will appear here once the data source is connected.`}
       </p>
 
       <Tabs defaultValue="electric" className="mt-4">
@@ -57,22 +57,18 @@ export function DetailsPanel({ county }: { county: string }) {
             </div>
 
             <section aria-label={`${dataset.label} rate history`}>
-              <h3 className="font-display text-base font-bold">
-                {dataset.label} rate history
-              </h3>
+              <h3 className="font-display text-base font-bold">{dataset.label} rate history</h3>
               <div className="mt-2">
                 <ComingSoon dataset={dataset} />
               </div>
             </section>
 
             <section aria-label="Energy burden" className="rounded-lg border bg-surface p-4">
-              <h3 className="font-display text-base font-bold">
-                Energy burden in {county} County
-              </h3>
+              <h3 className="font-display text-base font-bold">Energy burden in {place}</h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                Data coming soon. The share of household income spent on energy, and how it
-                compares with the Michigan average, will appear here once the DOE LEAD Tool
-                data is connected.
+                Data coming soon. The share of household income spent on energy, and how it compares
+                with the Michigan average, will appear here once the DOE LEAD Tool data is
+                connected.
               </p>
               <SourceLine source={null} />
             </section>

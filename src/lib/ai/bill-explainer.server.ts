@@ -61,7 +61,15 @@ function friendlyError(error: unknown): string {
 export async function handleBillExplain(request: Request): Promise<Response> {
   const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) {
-    return Response.json({ error: "The bill explainer is not configured yet." }, { status: 500 });
+    // Owner-facing detail goes to the server log only; never log bill text.
+    console.error("bill-explain: LOVABLE_API_KEY is not set; the explainer is unavailable.");
+    return Response.json(
+      {
+        error:
+          "The bill explainer isn't available right now. We're working on it, and your bill text was not saved or processed. You can still use the rate tracker, and please check back soon.",
+      },
+      { status: 503 },
+    );
   }
 
   const declared = Number(request.headers.get("content-length") ?? "0");

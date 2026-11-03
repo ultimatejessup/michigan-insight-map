@@ -4,8 +4,9 @@ import { SourceLine } from "./source-line";
 import { Label } from "@/components/ui/label";
 
 type Props = {
-  selected: string;
-  onSelect: (county: string) => void;
+  /** null = statewide view (no county selected) */
+  selected: string | null;
+  onSelect: (county: string | null) => void;
   metric: MapMetricKey;
   onMetricChange: (metric: MapMetricKey) => void;
 };
@@ -20,7 +21,7 @@ export function MichiganMap({ selected, onSelect, metric, onMetricChange }: Prop
   const max = hasData ? Math.max(...nums) : 1;
 
   const fillFor = (fips: string, name: string) => {
-    if (name === selected) return "var(--accent)";
+    if (selected !== null && name === selected) return "var(--accent)";
     const v = values[fips];
     if (v === undefined) return "oklch(0.93 0.012 245)";
     const t = max === min ? 0.5 : (v - min) / (max - min);
@@ -57,10 +58,11 @@ export function MichiganMap({ selected, onSelect, metric, onMetricChange }: Prop
           </Label>
           <select
             id="county-select"
-            value={selected}
-            onChange={(e) => onSelect(e.target.value)}
+            value={selected ?? ""}
+            onChange={(e) => onSelect(e.target.value === "" ? null : e.target.value)}
             className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
           >
+            <option value="">All of Michigan (statewide)</option>
             {counties.map((c) => (
               <option key={c.fips} value={c.name}>
                 {c.name} County
@@ -85,15 +87,13 @@ export function MichiganMap({ selected, onSelect, metric, onMetricChange }: Prop
               stroke={c.name === selected ? "var(--accent-strong)" : "var(--primary)"}
               strokeWidth={c.name === selected ? 3 : 0.6}
               className="cursor-pointer transition-[fill]"
-              onClick={() => onSelect(c.name)}
+              onClick={() => onSelect(c.name === selected ? null : c.name)}
               onMouseEnter={() => setHover({ name: c.name, x: c.cx, y: c.cy })}
               onMouseLeave={() => setHover(null)}
             >
               <title>
                 {c.name} County —{" "}
-                {values[c.fips] !== undefined
-                  ? `${values[c.fips]} ${active.unit}`
-                  : "no data yet"}
+                {values[c.fips] !== undefined ? `${values[c.fips]} ${active.unit}` : "no data yet"}
               </title>
             </path>
           ))}
@@ -113,6 +113,23 @@ export function MichiganMap({ selected, onSelect, metric, onMetricChange }: Prop
         ) : null}
       </div>
 
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-sm">
+        <p className="text-muted-foreground" aria-live="polite">
+          {selected === null
+            ? "Showing all of Michigan. Select a county to see local figures."
+            : `Showing ${selected} County.`}
+        </p>
+        {selected !== null ? (
+          <button
+            type="button"
+            onClick={() => onSelect(null)}
+            className="rounded-md border border-input px-3 py-1 font-semibold text-primary hover:bg-surface"
+          >
+            Reset to statewide
+          </button>
+        ) : null}
+      </div>
+
       <div className="mt-3 border-t pt-3">
         <p className="text-sm font-semibold">{active.label} by county</p>
         {hasData ? (
@@ -121,8 +138,7 @@ export function MichiganMap({ selected, onSelect, metric, onMetricChange }: Prop
             <div
               className="h-2 flex-1 rounded"
               style={{
-                background:
-                  "linear-gradient(90deg, oklch(0.9 0.03 258), oklch(0.4 0.12 258))",
+                background: "linear-gradient(90deg, oklch(0.9 0.03 258), oklch(0.4 0.12 258))",
               }}
             />
             <span className="text-xs text-muted-foreground">
@@ -131,8 +147,8 @@ export function MichiganMap({ selected, onSelect, metric, onMetricChange }: Prop
           </div>
         ) : (
           <p className="mt-1 text-sm text-muted-foreground">
-            Data coming soon. {active.comingSoonNote} Counties are shown unshaded, and the
-            selected county is outlined in orange.
+            Data coming soon. {active.comingSoonNote} Counties are shown unshaded
+            {selected !== null ? ", and the selected county is outlined in orange" : ""}.
           </p>
         )}
         <SourceLine source={active.source} />
