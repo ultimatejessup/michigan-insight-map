@@ -20,7 +20,7 @@ export function SiteHeader() {
           <span className="min-w-0">
             <span className="block truncate font-display text-lg font-bold leading-tight sm:text-xl">
               <span className="text-foreground">Michigan</span>{" "}
-              <span className="text-primary">Essentials Watch</span>
+              <span className="text-primary">Utility Watch</span>
             </span>
           </span>
         </Link>
