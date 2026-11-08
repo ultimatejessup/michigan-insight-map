@@ -18,10 +18,10 @@ export function SiteFooter() {
           <section aria-labelledby="footer-contact">
             <h2 id="footer-contact" className="font-display text-base font-semibold">Contact</h2>
             <a
-              href="mailto:power@miutilitieswatch.com"
+              href="mailto:power@miutilitywatch.com"
               className="mt-2 inline-block break-all text-base underline underline-offset-4 hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4"
             >
-              power@miutilitieswatch.com
+              power@miutilitywatch.com
             </a>
           </section>
         </div>
