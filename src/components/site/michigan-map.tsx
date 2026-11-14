@@ -56,11 +56,11 @@ export function MichiganMap({ selected, onSelect, metric, onMetricChange }: Prop
   const max = hasData ? Math.max(...nums) : 1;
 
   const fillFor = (fips: string, name: string) => {
-    if (selected !== null && name === selected) return "var(--accent)";
     const v = values[fips];
-    if (v === undefined) return "oklch(0.93 0.012 245)";
+    if (v === undefined) return "oklch(0.93 0.005 90)";
     const t = max === min ? 0.5 : (v - min) / (max - min);
-    return `oklch(${0.9 - t * 0.5} ${0.03 + t * 0.09} 258)`;
+    // Light to dark orange: a darker county spends a larger share of income on home energy.
+    return `oklch(${0.95 - t * 0.45} ${0.03 + t * 0.15} 55)`;
   };
 
   return (
@@ -121,8 +121,8 @@ export function MichiganMap({ selected, onSelect, metric, onMetricChange }: Prop
               key={c.fips}
               d={c.d}
               fill={fillFor(c.fips, c.name)}
-              stroke={c.name === selected ? "var(--accent-strong)" : "var(--primary)"}
-              strokeWidth={c.name === selected ? 3 : 0.6}
+              stroke="var(--primary)"
+              strokeWidth={0.6}
               className="cursor-pointer transition-[fill]"
               onClick={() => onSelect(c.name === selected ? null : c.name)}
               onMouseEnter={() => setHover({ name: c.name, x: c.cx, y: c.cy })}
@@ -136,6 +136,21 @@ export function MichiganMap({ selected, onSelect, metric, onMetricChange }: Prop
               </title>
             </path>
           ))}
+          {selected !== null
+            ? counties
+                .filter((c) => c.name === selected)
+                .map((c) => (
+                  <path
+                    key={`outline-${c.fips}`}
+                    d={c.d}
+                    fill="none"
+                    stroke="var(--primary)"
+                    strokeWidth={3.5}
+                    strokeLinejoin="round"
+                    pointerEvents="none"
+                  />
+                ))
+            : null}
         </svg>
         {hover ? (
           <div
@@ -180,7 +195,7 @@ export function MichiganMap({ selected, onSelect, metric, onMetricChange }: Prop
             <div
               className="h-2 flex-1 rounded"
               style={{
-                background: "linear-gradient(90deg, oklch(0.9 0.03 258), oklch(0.4 0.12 258))",
+                background: "linear-gradient(90deg, oklch(0.95 0.03 55), oklch(0.5 0.18 55))",
               }}
             />
             <span className="text-xs text-muted-foreground">
@@ -194,18 +209,21 @@ export function MichiganMap({ selected, onSelect, metric, onMetricChange }: Prop
         ) : isBurden ? (
           <p className="mt-1 text-sm text-muted-foreground">
             County energy burden is not available right now, so counties are shown unshaded
-            {selected !== null ? ", and the selected county is outlined in orange" : ""}.
+            {selected !== null ? ", and the selected county has a dark outline" : ""}.
           </p>
         ) : (
           <p className="mt-1 text-sm text-muted-foreground">
             Data coming soon. {active.comingSoonNote} Counties are shown unshaded
-            {selected !== null ? ", and the selected county is outlined in orange" : ""}.
+            {selected !== null ? ", and the selected county has a dark outline" : ""}.
           </p>
         )}
         {hasData && isBurden ? (
-          <p className="mt-1 text-xs text-muted-foreground">
-            Darker counties spend a larger share of household income on energy. Modeled estimates,
-            not what any one household pays.
+          <p className="mt-2 text-xs text-muted-foreground">
+            Each county is shaded by the share of household income that all households there spend
+            on home energy: electricity, natural gas and other fuels such as propane, fuel oil or
+            wood. It is not electric-only, and it leaves out gasoline and other transportation
+            costs. Darker orange means a larger share of income. These are DOE LEAD Tool modeled
+            estimates (2022 update), not what any one household pays.
           </p>
         ) : null}
         <SourceLine source={source} />

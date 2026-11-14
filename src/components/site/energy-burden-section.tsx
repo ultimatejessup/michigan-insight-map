@@ -59,7 +59,8 @@ export function EnergyBurdenSection({ county, place }: { county: string | null; 
             <strong className="font-display text-xl text-primary">
               {data.all.burdenPct.toFixed(1)}%
             </strong>{" "}
-            of their income on energy.
+            of their income on home energy: electricity, natural gas and other fuels such as propane
+            or fuel oil.
             {data.all.avgEnergyCost !== null && data.all.avgIncome !== null
               ? ` That is an average of ${usd.format(data.all.avgEnergyCost)} a year on energy for an average household income of ${usd.format(data.all.avgIncome)}.`
               : ""}
