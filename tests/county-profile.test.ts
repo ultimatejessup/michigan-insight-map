@@ -14,6 +14,7 @@ const rows = [
     total_population: 83757,
     median_household_income: "77538.00",
     geographies: { name: "Midland" },
+    geo_demographics_race: [{ race_category: "Black", pct_of_population: "1.40" }],
   },
   {
     data_year: 2024,
@@ -33,10 +34,12 @@ describe("county profile", () => {
       dataYear: 2024,
       population: 83757,
       medianHouseholdIncome: 77538,
+      blackSharePct: 1.4,
     });
   });
   test("keeps missing values as null, never zero", () => {
     expect(profileForCounty(map, "Saint Clair")?.medianHouseholdIncome).toBeNull();
+    expect(profileForCounty(map, "Saint Clair")?.blackSharePct).toBeNull();
   });
   test("returns null for no county, unknown county or bad input", () => {
     expect(profileForCounty(map, null)).toBeNull();

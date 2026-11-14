@@ -12,6 +12,8 @@ export type CountyProfile = {
   dataYear: number;
   population: number | null;
   medianHouseholdIncome: number | null;
+  /** Share of residents who are Black, in percent (stored value, e.g. 37.2). */
+  blackSharePct: number | null;
 };
 
 function countyKey(name: string): string {
@@ -44,11 +46,21 @@ export function parseCountyProfiles(rows: unknown): Map<string, CountyProfile> {
     const key = countyKey(name);
     const existing = map.get(key);
     if (existing && existing.dataYear >= year) continue;
+    const race = r["geo_demographics_race"];
+    const black = Array.isArray(race)
+      ? race.find(
+          (x): x is Record<string, unknown> =>
+            typeof x === "object" &&
+            x !== null &&
+            (x as Record<string, unknown>)["race_category"] === "Black",
+        )
+      : undefined;
     map.set(key, {
       county: name,
       dataYear: year,
       population: num(r["total_population"]),
       medianHouseholdIncome: num(r["median_household_income"]),
+      blackSharePct: black ? num(black["pct_of_population"]) : null,
     });
   }
   return map;

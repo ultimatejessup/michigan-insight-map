@@ -19,7 +19,8 @@ export function CountyProfileCard({ county }: { county: string | null }) {
   });
   if (!county || !query.data) return null;
   const p = profileForCounty(query.data, county);
-  if (!p || (p.population === null && p.medianHouseholdIncome === null)) return null;
+  if (!p || (p.population === null && p.medianHouseholdIncome === null && p.blackSharePct === null))
+    return null;
 
   return (
     <section
@@ -27,7 +28,7 @@ export function CountyProfileCard({ county }: { county: string | null }) {
       className="mt-4 rounded-lg border bg-surface p-4"
     >
       <h3 className="font-display text-base font-bold">About {county} County</h3>
-      <dl className="mt-2 grid gap-3 sm:grid-cols-2">
+      <dl className="mt-2 grid gap-3 sm:grid-cols-3">
         {p.population !== null && (
           <div>
             <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -45,6 +46,16 @@ export function CountyProfileCard({ county }: { county: string | null }) {
             </dt>
             <dd className="font-display text-xl font-bold text-primary">
               {usd.format(p.medianHouseholdIncome)}
+            </dd>
+          </div>
+        )}
+        {p.blackSharePct !== null && (
+          <div>
+            <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Black residents
+            </dt>
+            <dd className="font-display text-xl font-bold text-primary">
+              {p.blackSharePct.toFixed(1)}% of the population
             </dd>
           </div>
         )}
