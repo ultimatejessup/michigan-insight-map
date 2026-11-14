@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { counties, mapMetrics, michiganMap, type MapMetricKey } from "@/data/utility-data";
+import { countyKey, fetchEnergyBurden } from "@/lib/census/energy-burden";
 import { SourceLine } from "./source-line";
 import { Label } from "@/components/ui/label";
 
@@ -14,7 +16,40 @@ type Props = {
 export function MichiganMap({ selected, onSelect, metric, onMetricChange }: Props) {
   const [hover, setHover] = useState<{ name: string; x: number; y: number } | null>(null);
   const active = mapMetrics.find((m) => m.key === metric)!;
-  const values = active.values;
+
+  // County energy burden (county-wide figure, DOE LEAD Tool) read from the stored dataset.
+  const burdenQuery = useQuery({
+    queryKey: ["energy-burden"],
+    queryFn: ({ signal }) => fetchEnergyBurden(signal),
+    staleTime: 24 * 60 * 60 * 1000,
+    retry: 1,
+  });
+  const burden = useMemo(() => {
+    const out: Record<string, number> = {};
+    let sourceUrl: string | null = null;
+    if (burdenQuery.data) {
+      for (const c of counties) {
+        const entry = burdenQuery.data.get(countyKey(c.name));
+        const v = entry?.all?.burdenPct;
+        if (typeof v === "number") {
+          out[c.fips] = v;
+          sourceUrl = sourceUrl ?? entry?.sourceUrl ?? null;
+        }
+      }
+    }
+    return { values: out, sourceUrl };
+  }, [burdenQuery.data]);
+
+  const isBurden = metric === "burden";
+  const values = isBurden ? burden.values : active.values;
+  const source =
+    isBurden && burden.sourceUrl
+      ? {
+          label: "DOE Low-Income Energy Affordability Data (LEAD) Tool, 2022 update",
+          url: burden.sourceUrl,
+        }
+      : active.source;
+  const fmt = (v: number) => (isBurden ? v.toFixed(1) : String(v));
   const hasData = Object.keys(values).length > 0;
   const nums = Object.values(values);
   const min = hasData ? Math.min(...nums) : 0;
@@ -93,7 +128,9 @@ export function MichiganMap({ selected, onSelect, metric, onMetricChange }: Prop
             >
               <title>
                 {c.name} County —{" "}
-                {values[c.fips] !== undefined ? `${values[c.fips]} ${active.unit}` : "no data yet"}
+                {values[c.fips] !== undefined
+                  ? `${fmt(values[c.fips]!)} ${active.unit}`
+                  : "no data yet"}
               </title>
             </path>
           ))}
@@ -108,7 +145,10 @@ export function MichiganMap({ selected, onSelect, metric, onMetricChange }: Prop
             }}
           >
             {hover.name} County ·{" "}
-            {values[counties.find((c) => c.name === hover.name)!.fips] ?? "no data yet"}
+            {(() => {
+              const v = values[counties.find((c) => c.name === hover.name)!.fips];
+              return v === undefined ? "no data yet" : `${fmt(v)} ${active.unit}`;
+            })()}
           </div>
         ) : null}
       </div>
@@ -134,7 +174,7 @@ export function MichiganMap({ selected, onSelect, metric, onMetricChange }: Prop
         <p className="text-sm font-semibold">{active.label} by county</p>
         {hasData ? (
           <div className="mt-2 flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">{min}</span>
+            <span className="text-xs text-muted-foreground">{fmt(min)}</span>
             <div
               className="h-2 flex-1 rounded"
               style={{
@@ -142,16 +182,31 @@ export function MichiganMap({ selected, onSelect, metric, onMetricChange }: Prop
               }}
             />
             <span className="text-xs text-muted-foreground">
-              {max} {active.unit}
+              {fmt(max)} {active.unit}
             </span>
           </div>
+        ) : isBurden && burdenQuery.isPending ? (
+          <p role="status" className="mt-1 text-sm text-muted-foreground">
+            Loading county energy burden…
+          </p>
+        ) : isBurden ? (
+          <p className="mt-1 text-sm text-muted-foreground">
+            County energy burden is not available right now, so counties are shown unshaded
+            {selected !== null ? ", and the selected county is outlined in orange" : ""}.
+          </p>
         ) : (
           <p className="mt-1 text-sm text-muted-foreground">
             Data coming soon. {active.comingSoonNote} Counties are shown unshaded
             {selected !== null ? ", and the selected county is outlined in orange" : ""}.
           </p>
         )}
-        <SourceLine source={active.source} />
+        {hasData && isBurden ? (
+          <p className="mt-1 text-xs text-muted-foreground">
+            Darker counties spend a larger share of household income on energy. Modeled estimates,
+            not what any one household pays.
+          </p>
+        ) : null}
+        <SourceLine source={source} />
       </div>
     </div>
   );
