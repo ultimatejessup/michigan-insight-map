@@ -14,9 +14,9 @@ import { Link } from "@tanstack/react-router";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SourceLine } from "./source-line";
 import {
-  DEFAULT_UTILITIES,
   MPSC_SOURCE_LABEL,
   fetchElectricRates,
+  fetchServiceTerritory,
   formatTableDate,
   hasCollectionInProgress,
   lastCollectionInProgressDate,
@@ -25,8 +25,8 @@ import {
   statusAt,
   statusLabel,
   statusShort,
+  utilitiesForCounty,
   utilityList,
-  type ElectricRatePoint,
 } from "@/lib/rates/electric-rates";
 
 const UNIT = "¢/kWh";
@@ -37,10 +37,6 @@ const COLORS: Record<string, string> = {
   "Consumers Energy": "#d9650a",
 };
 const FALLBACK_COLORS = ["#2a7f62", "#7a4fa3", "#8a6d00", "#b0306a", "#4b5563", "#0e7490"];
-
-function colorFor(utility: string, index: number): string {
-  return COLORS[utility] ?? FALLBACK_COLORS[index % FALLBACK_COLORS.length] ?? "#4b5563";
-}
 
 function Notice({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -54,46 +50,6 @@ function Notice({ title, children }: { title: string; children: React.ReactNode 
         Tell us what you pay
       </Link>
       <SourceLine source={null} />
-    </div>
-  );
-}
-
-function CurrentRateCard({
-  utility,
-  point,
-}: {
-  utility: string;
-  point: ElectricRatePoint | undefined;
-}) {
-  // A figure is only shown with a source link; otherwise it is hidden.
-  const shown = point && point.sourceUrl ? point : undefined;
-  return (
-    <div className="rounded-lg border bg-card p-4">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        Latest rate · {utility}
-      </p>
-      {shown ? (
-        <>
-          <p className="mt-1 font-display text-xl font-bold text-primary">
-            {shown.value.toFixed(2)} {UNIT}
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Residential, 1,000 kWh a month. MPSC table dated {formatTableDate(shown.readingDate)}.
-          </p>
-          <SourceLine
-            source={{
-              label: `${MPSC_SOURCE_LABEL} (table dated ${formatTableDate(shown.readingDate)})`,
-              url: shown.sourceUrl!,
-            }}
-          />
-          <p className="mt-1 text-xs font-medium text-primary">{statusLabel(shown.status)}</p>
-        </>
-      ) : (
-        <>
-          <p className="mt-1 font-display text-xl font-bold text-primary">Source pending</p>
-          <SourceLine source={null} />
-        </>
-      )}
     </div>
   );
 }
@@ -112,10 +68,41 @@ export function ElectricRateHistory({ county }: { county: string | null }) {
     retry: 1,
   });
 
+  // County service areas are optional: if they cannot be read, every utility is shown.
+  const territoryQuery = useQuery({
+    queryKey: ["electric-service-territory"],
+    queryFn: ({ signal }) => fetchServiceTerritory(signal),
+    staleTime: 24 * 60 * 60 * 1000,
+    retry: 1,
+  });
+
   const points = useMemo(() => query.data ?? [], [query.data]);
-  const utilities = useMemo(() => utilityList(points), [points]);
+  const allUtilities = useMemo(() => utilityList(points), [points]);
+  const countyUtilities = useMemo(
+    () => (territoryQuery.data ? utilitiesForCounty(territoryQuery.data, county) : null),
+    [territoryQuery.data, county],
+  );
+  // With a county selected, show only the rate-table utilities that serve it.
+  const utilities = useMemo(
+    () =>
+      countyUtilities ? allUtilities.filter((u) => countyUtilities.includes(u)) : allUtilities,
+    [allUtilities, countyUtilities],
+  );
   const latest = useMemo(() => latestByUtility(points), [points]);
-  const [extra, setExtra] = useState<string[]>([]);
+  // Every regulated utility is shown by default; residents can switch any of them off.
+  const [hidden, setHidden] = useState<string[]>([]);
+
+  const colors = useMemo(() => {
+    const map: Record<string, string> = { ...COLORS };
+    let next = 0;
+    for (const u of allUtilities) {
+      if (!map[u]) {
+        map[u] = FALLBACK_COLORS[next % FALLBACK_COLORS.length] ?? "#4b5563";
+        next += 1;
+      }
+    }
+    return map;
+  }, [allUtilities]);
 
   if (query.isPending) {
     return (
@@ -133,24 +120,13 @@ export function ElectricRateHistory({ county }: { county: string | null }) {
     );
   }
 
-  const selected = [...DEFAULT_UTILITIES.filter((u) => utilities.includes(u)), ...extra];
-  const others = utilities.filter((u) => !(DEFAULT_UTILITIES as readonly string[]).includes(u));
+  const selected = utilities.filter((u) => !hidden.includes(u));
   const rows = pivotForChart(points, selected);
-  if (rows.length === 0) {
-    return (
-      <Notice title="Data not yet loaded">
-        No electric rate history is available for the selected utilities. No figure is shown.
-      </Notice>
-    );
-  }
-  const sourceUrl =
-    (selected[0] ? latest.get(selected[0])?.sourceUrl : undefined) ??
-    points.find((p) => p.sourceUrl)?.sourceUrl ??
-    null;
   const newest = points.at(-1)?.readingDate ?? "";
   const inProgressThrough = lastCollectionInProgressDate(points);
   const showProgressNote = hasCollectionInProgress(points, selected) && inProgressThrough;
   const yearTicks = rows.filter((r) => r.date.endsWith("-01-01")).map((r) => r.date);
+  const sourceUrl = [...points].reverse().find((p) => p.sourceUrl)?.sourceUrl ?? null;
 
   const renderTooltip = ({ active, label, payload }: TooltipProps) => {
     if (!active || !payload || !label) return null;
@@ -182,111 +158,30 @@ export function ElectricRateHistory({ county }: { county: string | null }) {
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-3 sm:grid-cols-2">
-        {DEFAULT_UTILITIES.map((u) => (
-          <CurrentRateCard key={u} utility={u} point={latest.get(u)} />
-        ))}
-      </div>
+      <p className="rounded-lg border bg-surface p-3 text-sm text-muted-foreground">
+        {county && countyUtilities
+          ? `Showing the MPSC-regulated electric utilities that serve ${county} County. A utility may serve only part of the county, and a cooperative or municipal utility that is not in the MPSC rate table may serve your address. Check your bill for your utility's name.`
+          : county
+            ? `No MPSC-regulated utility is on record for ${county} County, so every utility is shown. Your electricity may come from a cooperative or municipal utility, which the MPSC rate table does not cover. Check your bill for your utility's name.`
+            : "Every MPSC-regulated electric utility is shown. Each serves only part of Michigan, so select a county on the map or check your bill for your utility's name."}
+      </p>
 
-      <section aria-label="Electric rate history chart">
-        <h3 className="font-display text-base font-bold">Electric rate history</h3>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Monthly residential rate at 1,000 kWh, in {UNIT}, as published by the Michigan Public
-          Service Commission. Values are shown exactly as published.
-          {county
-            ? " Electric rates are published by utility, so these figures are the same in every county."
-            : ""}
-        </p>
-
-        <div
-          className="mt-3 h-72 w-full rounded-lg border bg-card p-2"
-          role="img"
-          aria-label={`Line chart of monthly residential electric rates for ${selected.join(" and ")} from ${formatTableDate(rows[0]?.date ?? newest)} to ${formatTableDate(newest)}`}
-        >
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={rows} margin={{ top: 8, right: 16, bottom: 4, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#d6dde8" />
-              <XAxis
-                dataKey="date"
-                ticks={yearTicks}
-                tickFormatter={(d: string) => d.slice(0, 4)}
-                tick={{ fontSize: 12 }}
-              />
-              <YAxis
-                domain={["auto", "auto"]}
-                tick={{ fontSize: 12 }}
-                width={44}
-                tickFormatter={(v: number) => v.toFixed(0)}
-                label={{ value: UNIT, angle: -90, position: "insideLeft", fontSize: 12, dx: 4 }}
-              />
-              <Tooltip content={renderTooltip as never} />
-              <Legend wrapperStyle={{ fontSize: 12 }} />
-              {selected.map((u, i) => (
-                <Line
-                  key={u}
-                  type="monotone"
-                  dataKey={u}
-                  stroke={colorFor(u, i)}
-                  strokeWidth={2}
-                  dot={false}
-                  connectNulls
-                  isAnimationActive={false}
-                />
-              ))}
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        {others.length > 0 && (
-          <fieldset className="mt-3">
-            <legend className="text-sm font-semibold">Add another utility to the chart</legend>
-            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
-              {others.map((u) => {
-                const id = `rate-util-${u.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`;
-                return (
-                  <label key={u} htmlFor={id} className="flex items-center gap-2 text-sm">
-                    <Checkbox
-                      id={id}
-                      checked={extra.includes(u)}
-                      onCheckedChange={(on) =>
-                        setExtra((cur) => (on === true ? [...cur, u] : cur.filter((x) => x !== u)))
-                      }
-                    />
-                    {u}
-                  </label>
-                );
-              })}
-            </div>
-          </fieldset>
-        )}
-
-        <SourceLine
-          source={
-            sourceUrl
-              ? {
-                  label: `${MPSC_SOURCE_LABEL} (newest table dated ${formatTableDate(newest)})`,
-                  url: sourceUrl,
-                }
-              : null
-          }
-        />
-        <p className="mt-1 text-xs text-muted-foreground">
-          Data is refreshed periodically, not in real time. Each month matches the date printed on
-          the MPSC table.
-        </p>
-        {showProgressNote && (
-          <p className="mt-1 text-xs text-muted-foreground">
-            Data collection in progress: figures through {formatTableDate(inProgressThrough)} are
-            stored values that have not yet been checked against a published MPSC table.
+      {utilities.includes("UMERC (formerly WEPCO)") &&
+        utilities.includes("UMERC (formerly WPSC)") && (
+          <p className="rounded-lg border bg-surface p-3 text-sm text-muted-foreground">
+            Upper Michigan Energy Resources has two rate zones with different rates. In Menominee
+            County the zone depends on your township, so check your bill to see which applies.
           </p>
         )}
-      </section>
 
       <section
         aria-label="Latest rates for every regulated utility"
-        className="rounded-lg border bg-surface p-4"
+        className="rounded-lg border bg-card p-4"
       >
-        <h3 className="font-display text-base font-bold">Latest published rates, all utilities</h3>
+        <h3 className="font-display text-base font-bold">Latest published rates</h3>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Residential, 1,000 kWh a month, in {UNIT}. MPSC table dated {formatTableDate(newest)}.
+        </p>
         <div className="mt-2 overflow-x-auto">
           <table className="w-full text-left text-sm">
             <caption className="sr-only">
@@ -315,9 +210,14 @@ export function ElectricRateHistory({ county }: { county: string | null }) {
                 return (
                   <tr key={u} className="border-b last:border-0">
                     <th scope="row" className="py-1 pr-3 font-medium">
+                      <span
+                        aria-hidden
+                        className="mr-2 inline-block h-2 w-2 rounded-full"
+                        style={{ backgroundColor: colors[u] }}
+                      />
                       {u}
                     </th>
-                    <td className="py-1 pr-3">
+                    <td className="py-1 pr-3 font-semibold text-primary">
                       {p.sourceUrl ? p.value.toFixed(2) : "Source pending"}
                     </td>
                     <td className="py-1 pr-3">{formatTableDate(p.readingDate)}</td>
@@ -328,9 +228,104 @@ export function ElectricRateHistory({ county }: { county: string | null }) {
             </tbody>
           </table>
         </div>
-        <p className="mt-2 text-xs text-muted-foreground">
+        <SourceLine
+          source={
+            sourceUrl
+              ? {
+                  label: `${MPSC_SOURCE_LABEL} (newest table dated ${formatTableDate(newest)})`,
+                  url: sourceUrl,
+                }
+              : null
+          }
+        />
+        <p className="mt-1 text-xs text-muted-foreground">
           Change over time is not calculated here. Only values published by the MPSC are shown.
         </p>
+      </section>
+
+      <section aria-label="Electric rate history chart">
+        <h3 className="font-display text-base font-bold">Electric rate history</h3>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Monthly residential rate at 1,000 kWh, in {UNIT}, as published by the Michigan Public
+          Service Commission. Values are shown exactly as published.
+        </p>
+
+        {rows.length === 0 ? (
+          <p className="mt-3 rounded-lg border bg-surface p-4 text-sm text-muted-foreground">
+            No utility is selected. Choose at least one below to see its history.
+          </p>
+        ) : (
+          <div
+            className="mt-3 h-80 w-full rounded-lg border bg-card p-2"
+            role="img"
+            aria-label={`Line chart of monthly residential electric rates for ${selected.join(", ")} from ${formatTableDate(rows[0]?.date ?? newest)} to ${formatTableDate(newest)}`}
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={rows} margin={{ top: 8, right: 16, bottom: 4, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#d6dde8" />
+                <XAxis
+                  dataKey="date"
+                  ticks={yearTicks}
+                  tickFormatter={(d: string) => d.slice(0, 4)}
+                  tick={{ fontSize: 12 }}
+                />
+                <YAxis
+                  domain={["auto", "auto"]}
+                  tick={{ fontSize: 12 }}
+                  width={44}
+                  tickFormatter={(v: number) => v.toFixed(0)}
+                  label={{ value: UNIT, angle: -90, position: "insideLeft", fontSize: 12, dx: 4 }}
+                />
+                <Tooltip content={renderTooltip as never} />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
+                {selected.map((u) => (
+                  <Line
+                    key={u}
+                    type="monotone"
+                    dataKey={u}
+                    stroke={colors[u]}
+                    strokeWidth={2}
+                    dot={false}
+                    connectNulls
+                    isAnimationActive={false}
+                  />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+
+        <fieldset className="mt-3">
+          <legend className="text-sm font-semibold">Utilities shown on the chart</legend>
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
+            {utilities.map((u) => {
+              const id = `rate-util-${u.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`;
+              return (
+                <label key={u} htmlFor={id} className="flex items-center gap-2 text-sm">
+                  <Checkbox
+                    id={id}
+                    checked={!hidden.includes(u)}
+                    onCheckedChange={(on) =>
+                      setHidden((cur) => (on === true ? cur.filter((x) => x !== u) : [...cur, u]))
+                    }
+                  />
+                  {u}
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
+
+        <p className="mt-2 text-xs text-muted-foreground">
+          Data is refreshed periodically, not in real time. Each month matches the date printed on
+          the MPSC table.
+        </p>
+        {showProgressNote && (
+          <p className="mt-1 text-xs text-muted-foreground">
+            Data collection in progress: figures through {formatTableDate(inProgressThrough)} are
+            stored values that have not yet been checked against a published MPSC table.
+          </p>
+        )}
       </section>
     </div>
   );

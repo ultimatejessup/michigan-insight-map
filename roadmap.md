@@ -24,7 +24,7 @@ Guardrails: no ten-member proposal, no HB 4918, never invent data, party never p
 
 ## Tracker data spec (Oct 12) — BLOCKED on database connection
 - [ ] Map from geographies (level='county', Michigan), color by metric, legend, "Reset to statewide" button
-- [x] Electric: monthly rates from `utility_rate_history_mi` (DTE vs Consumers default, other utilities optional), source link per figure, friendly status labels — on branch `rate-history-display`, needs the two VITE_SUPABASE_* env vars
+- [x] Electric: monthly rates from `utility_rate_history_mi` (all MPSC-regulated utilities shown, any can be switched off), source link per figure, friendly status labels — on branch `rate-history-display`, needs the two VITE_SUPABASE_* env vars
 - [ ] Electric: mpsc_rate_actions, state_rate_comparison
 - [ ] Natural Gas: show existing data or "Data not yet loaded" + planned source
 - [ ] Water: water_sewage_rates + flag "Water rates in Michigan are generally not set by the MPSC."

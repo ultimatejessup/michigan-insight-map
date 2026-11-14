@@ -9,6 +9,8 @@ import {
   pivotForChart,
   statusAt,
   statusLabel,
+  parseTerritoryRows,
+  utilitiesForCounty,
   utilityList,
 } from "../src/lib/rates/electric-rates";
 
@@ -143,5 +145,31 @@ describe("lookups and chart data", () => {
   test("formats the MPSC table date without time zone shifts", () => {
     expect(formatTableDate("2026-10-01")).toBe("Oct 1, 2026");
     expect(formatTableDate("2023-01-01")).toBe("Jan 1, 2023");
+  });
+});
+
+describe("service territory", () => {
+  const territory = parseTerritoryRows([
+    { rate_history_utility: "DTE Electric", geographies: { name: "Midland" } },
+    { rate_history_utility: "Consumers Energy", geographies: { name: "Midland" } },
+    { rate_history_utility: "DTE Electric", geographies: { name: "Midland" } },
+    { rate_history_utility: "DTE Electric", geographies: { name: "St. Clair" } },
+    { rate_history_utility: 5, geographies: { name: "Bad" } },
+    null,
+  ]);
+
+  test("groups utilities by county and drops bad rows and duplicates", () => {
+    expect(utilitiesForCounty(territory, "Midland")).toEqual(["DTE Electric", "Consumers Energy"]);
+  });
+
+  test("matches county names loosely", () => {
+    expect(utilitiesForCounty(territory, "Midland County")).not.toBeNull();
+    expect(utilitiesForCounty(territory, "Saint Clair")).toEqual(["DTE Electric"]);
+  });
+
+  test("returns null with no county or no record", () => {
+    expect(utilitiesForCounty(territory, null)).toBeNull();
+    expect(utilitiesForCounty(territory, "Keweenaw")).toBeNull();
+    expect(parseTerritoryRows("nope").size).toBe(0);
   });
 });
