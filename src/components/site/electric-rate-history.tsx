@@ -16,6 +16,7 @@ import { SourceLine } from "./source-line";
 import {
   MPSC_SOURCE_LABEL,
   fetchElectricRates,
+  fetchServiceTerritory,
   formatTableDate,
   hasCollectionInProgress,
   lastCollectionInProgressDate,
@@ -24,6 +25,7 @@ import {
   statusAt,
   statusLabel,
   statusShort,
+  utilitiesForCounty,
   utilityList,
 } from "@/lib/rates/electric-rates";
 
@@ -66,8 +68,26 @@ export function ElectricRateHistory({ county }: { county: string | null }) {
     retry: 1,
   });
 
+  // County service areas are optional: if they cannot be read, every utility is shown.
+  const territoryQuery = useQuery({
+    queryKey: ["electric-service-territory"],
+    queryFn: ({ signal }) => fetchServiceTerritory(signal),
+    staleTime: 24 * 60 * 60 * 1000,
+    retry: 1,
+  });
+
   const points = useMemo(() => query.data ?? [], [query.data]);
-  const utilities = useMemo(() => utilityList(points), [points]);
+  const allUtilities = useMemo(() => utilityList(points), [points]);
+  const countyUtilities = useMemo(
+    () => (territoryQuery.data ? utilitiesForCounty(territoryQuery.data, county) : null),
+    [territoryQuery.data, county],
+  );
+  // With a county selected, show only the rate-table utilities that serve it.
+  const utilities = useMemo(
+    () =>
+      countyUtilities ? allUtilities.filter((u) => countyUtilities.includes(u)) : allUtilities,
+    [allUtilities, countyUtilities],
+  );
   const latest = useMemo(() => latestByUtility(points), [points]);
   // Every regulated utility is shown by default; residents can switch any of them off.
   const [hidden, setHidden] = useState<string[]>([]);
@@ -75,14 +95,14 @@ export function ElectricRateHistory({ county }: { county: string | null }) {
   const colors = useMemo(() => {
     const map: Record<string, string> = { ...COLORS };
     let next = 0;
-    for (const u of utilities) {
+    for (const u of allUtilities) {
       if (!map[u]) {
         map[u] = FALLBACK_COLORS[next % FALLBACK_COLORS.length] ?? "#4b5563";
         next += 1;
       }
     }
     return map;
-  }, [utilities]);
+  }, [allUtilities]);
 
   if (query.isPending) {
     return (
@@ -139,10 +159,20 @@ export function ElectricRateHistory({ county }: { county: string | null }) {
   return (
     <div className="space-y-4">
       <p className="rounded-lg border bg-surface p-3 text-sm text-muted-foreground">
-        {county
-          ? `Which electric utilities serve ${county} County is not loaded yet, so every MPSC-regulated utility is shown. Check your bill for your utility's name.`
-          : "Every MPSC-regulated electric utility is shown. Each serves only part of Michigan, so check your bill for your utility's name."}
+        {county && countyUtilities
+          ? `Showing the MPSC-regulated electric utilities that serve ${county} County. A utility may serve only part of the county, and a cooperative or municipal utility that is not in the MPSC rate table may serve your address. Check your bill for your utility's name.`
+          : county
+            ? `No MPSC-regulated utility is on record for ${county} County, so every utility is shown. Your electricity may come from a cooperative or municipal utility, which the MPSC rate table does not cover. Check your bill for your utility's name.`
+            : "Every MPSC-regulated electric utility is shown. Each serves only part of Michigan, so select a county on the map or check your bill for your utility's name."}
       </p>
+
+      {utilities.includes("UMERC (formerly WEPCO)") &&
+        utilities.includes("UMERC (formerly WPSC)") && (
+          <p className="rounded-lg border bg-surface p-3 text-sm text-muted-foreground">
+            Upper Michigan Energy Resources has two rate zones with different rates. In Menominee
+            County the zone depends on your township, so check your bill to see which applies.
+          </p>
+        )}
 
       <section
         aria-label="Latest rates for every regulated utility"

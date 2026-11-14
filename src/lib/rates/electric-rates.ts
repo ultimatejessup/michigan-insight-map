@@ -190,3 +190,69 @@ export async function fetchElectricRates(
   }
   return parseRateRows(rows);
 }
+
+// ---------------------------------------------------------------------------
+// Service territory (which rate-table utilities serve each county)
+// Source: EIA-861 2025 Service_Territory, stored in electric_service_territory_mi.
+// EIA lists counties where a utility has distribution equipment, so a utility can serve
+// only part of a county. Only utilities that have an MPSC rate series are stored.
+// ---------------------------------------------------------------------------
+
+export type ServiceTerritory = Map<string, string[]>;
+
+function countyKey(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/\bcounty\b/g, "")
+    .replace(/\bsaint\b/g, "st")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+/** Turns the REST rows (`rate_history_utility`, embedded `geographies.name`) into county -> utilities. */
+export function parseTerritoryRows(rows: unknown): ServiceTerritory {
+  const map: ServiceTerritory = new Map();
+  if (!Array.isArray(rows)) return map;
+  for (const raw of rows) {
+    if (typeof raw !== "object" || raw === null) continue;
+    const r = raw as Record<string, unknown>;
+    const utility = r["rate_history_utility"];
+    const geo = r["geographies"];
+    const name =
+      typeof geo === "object" && geo !== null ? (geo as Record<string, unknown>)["name"] : null;
+    if (typeof utility !== "string" || typeof name !== "string") continue;
+    const key = countyKey(name);
+    const list = map.get(key) ?? [];
+    if (!list.includes(utility)) list.push(utility);
+    map.set(key, list);
+  }
+  return map;
+}
+
+/** Utilities that serve the county, or null when no county is selected or none is recorded. */
+export function utilitiesForCounty(
+  territory: ServiceTerritory,
+  county: string | null,
+): string[] | null {
+  if (!county) return null;
+  const list = territory.get(countyKey(county));
+  return list && list.length > 0 ? list : null;
+}
+
+export async function fetchServiceTerritory(
+  signal?: AbortSignal,
+): Promise<ServiceTerritory | null> {
+  const url = import.meta.env["VITE_SUPABASE_URL"] as string | undefined;
+  const key = import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] as string | undefined;
+  if (!url || !key) return null;
+  const query = new URLSearchParams({
+    select: "rate_history_utility,geographies!inner(name)",
+    limit: "1000",
+  });
+  const res = await fetch(
+    `${url.replace(/\/$/, "")}/rest/v1/electric_service_territory_mi?${query}`,
+    { headers: { apikey: key, Accept: "application/json" }, ...(signal ? { signal } : {}) },
+  );
+  if (!res.ok) throw new Error(`Service territory request failed (${res.status})`);
+  return parseTerritoryRows(await res.json());
+}
