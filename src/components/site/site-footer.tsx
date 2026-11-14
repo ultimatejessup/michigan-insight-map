@@ -4,7 +4,7 @@ export function SiteFooter() {
   return (
     <footer className="mt-16 bg-primary text-primary-foreground">
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-        <p className="font-display text-lg font-semibold">Michigan Essentials Watch</p>
+        <p className="font-display text-lg font-semibold">Michigan Utility Watch</p>
         <div className="mt-6 grid gap-6 md:grid-cols-[2fr_1fr]">
           <nav aria-label="Footer" className="flex flex-wrap content-start items-start gap-x-6 gap-y-3 text-base font-semibold">
             <Link to="/" className="underline underline-offset-4 hover:text-accent">Tracker</Link>
