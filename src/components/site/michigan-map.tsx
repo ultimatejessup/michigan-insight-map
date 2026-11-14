@@ -66,27 +66,29 @@ export function MichiganMap({ selected, onSelect, metric, onMetricChange }: Prop
   return (
     <div className="rounded-lg border bg-card p-4 shadow-card">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-        <div
-          role="group"
-          aria-label="Map metric"
-          className="inline-flex rounded-md border border-input p-0.5"
-        >
-          {mapMetrics.map((m) => (
-            <button
-              key={m.key}
-              type="button"
-              onClick={() => onMetricChange(m.key)}
-              aria-pressed={metric === m.key}
-              className={`rounded px-3 py-1.5 text-sm font-semibold transition-colors ${
-                metric === m.key
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-primary"
-              }`}
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
+        {mapMetrics.length > 1 ? (
+          <div
+            role="group"
+            aria-label="Map metric"
+            className="inline-flex rounded-md border border-input p-0.5"
+          >
+            {mapMetrics.map((m) => (
+              <button
+                key={m.key}
+                type="button"
+                onClick={() => onMetricChange(m.key)}
+                aria-pressed={metric === m.key}
+                className={`rounded px-3 py-1.5 text-sm font-semibold transition-colors ${
+                  metric === m.key
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-primary"
+                }`}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
         <div className="min-w-[12rem] flex-1">
           <Label htmlFor="county-select" className="sr-only">
             Choose a county
