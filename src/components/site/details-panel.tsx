@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { utilityDatasets, type UtilityDataset } from "@/data/utility-data";
 import { SourceLine } from "./source-line";
+import { ElectricRateHistory } from "./electric-rate-history";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 function ComingSoon({ dataset }: { dataset: UtilityDataset }) {
@@ -50,18 +51,24 @@ export function DetailsPanel({ county }: { county: string | null }) {
 
         {utilityDatasets.map((dataset) => (
           <TabsContent key={dataset.key} value={dataset.key} className="mt-4 space-y-4">
-            <div className="grid gap-3 sm:grid-cols-3">
-              <StatCard label="Current rate" dataset={dataset} />
-              <StatCard label="Change over 12 months" dataset={dataset} />
-              <StatCard label="Change since 2018" dataset={dataset} />
-            </div>
+            {dataset.key === "electric" ? (
+              <ElectricRateHistory county={county} />
+            ) : (
+              <>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <StatCard label="Current rate" dataset={dataset} />
+                  <StatCard label="Change over 12 months" dataset={dataset} />
+                  <StatCard label="Change since 2018" dataset={dataset} />
+                </div>
 
-            <section aria-label={`${dataset.label} rate history`}>
-              <h3 className="font-display text-base font-bold">{dataset.label} rate history</h3>
-              <div className="mt-2">
-                <ComingSoon dataset={dataset} />
-              </div>
-            </section>
+                <section aria-label={`${dataset.label} rate history`}>
+                  <h3 className="font-display text-base font-bold">{dataset.label} rate history</h3>
+                  <div className="mt-2">
+                    <ComingSoon dataset={dataset} />
+                  </div>
+                </section>
+              </>
+            )}
 
             <section aria-label="Energy burden" className="rounded-lg border bg-surface p-4">
               <h3 className="font-display text-base font-bold">Energy burden in {place}</h3>
