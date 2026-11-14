@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { utilityDatasets, type UtilityDataset } from "@/data/utility-data";
 import { SourceLine } from "./source-line";
 import { ElectricRateHistory } from "./electric-rate-history";
+import { CountyProfileCard } from "./county-profile-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 function ComingSoon({ dataset }: { dataset: UtilityDataset }) {
@@ -39,6 +40,8 @@ export function DetailsPanel({ county }: { county: string | null }) {
           ? "Showing all of Michigan. The statewide share of household income spent on energy is not loaded yet — it will appear here once the data source is connected. Select a county on the map to see local figures."
           : `In ${county} County, the share of household income spent on energy is not loaded yet — the energy burden figure will appear here once the data source is connected.`}
       </p>
+
+      <CountyProfileCard county={county} />
 
       <Tabs defaultValue="electric" className="mt-4">
         <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 bg-surface p-1">
