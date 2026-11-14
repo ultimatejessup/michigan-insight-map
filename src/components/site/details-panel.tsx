@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { utilityDatasets, type UtilityDataset } from "@/data/utility-data";
 import { SourceLine } from "./source-line";
-import { ElectricRateHistory } from "./electric-rate-history";
+import { ElectricRateHistory, ElectricScopeNote } from "./electric-rate-history";
+import { useState } from "react";
 import { CountyProfileCard } from "./county-profile-card";
 import { EnergyBurdenSection } from "./energy-burden-section";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -33,6 +34,7 @@ function StatCard({ label, dataset }: { label: string; dataset: UtilityDataset }
 }
 
 export function DetailsPanel({ county }: { county: string | null }) {
+  const [tab, setTab] = useState<string>(utilityDatasets[0]?.key ?? "electric");
   const place = county === null ? "Michigan (statewide)" : `${county} County`;
   return (
     <div className="rounded-lg border bg-card p-4 shadow-card sm:p-6">
@@ -42,9 +44,11 @@ export function DetailsPanel({ county }: { county: string | null }) {
           : `Showing figures for ${county} County.`}
       </p>
 
+      {tab === "electric" && <ElectricScopeNote county={county} />}
+
       <CountyProfileCard county={county} />
 
-      <Tabs defaultValue="electric" className="mt-4">
+      <Tabs value={tab} onValueChange={setTab} className="mt-4">
         <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 bg-surface p-1">
           {utilityDatasets.map((d) => (
             <TabsTrigger key={d.key} value={d.key} className="text-sm font-semibold">

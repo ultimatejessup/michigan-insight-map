@@ -96,7 +96,7 @@ export const mapMetrics: MapMetric[] = [
     values: {},
     source: null,
     comingSoonNote:
-      "County energy burden will be shaded here once the DOE LEAD Tool dataset is connected.",
+      "County energy burden is shaded here from the DOE LEAD Tool dataset.",
   },
   {
     key: "rate",

@@ -60,6 +60,28 @@ type TooltipProps = {
   payload?: { dataKey?: string; value?: number; color?: string }[];
 };
 
+/** Which utilities are shown, and why. Rendered above the utility-type tabs by the details panel. */
+export function ElectricScopeNote({ county }: { county: string | null }) {
+  const territoryQuery = useQuery({
+    queryKey: ["electric-service-territory"],
+    queryFn: ({ signal }) => fetchServiceTerritory(signal),
+    staleTime: 24 * 60 * 60 * 1000,
+    retry: 1,
+  });
+  const countyUtilities = territoryQuery.data
+    ? utilitiesForCounty(territoryQuery.data, county)
+    : null;
+  return (
+    <p className="mt-3 rounded-lg border bg-surface p-3 text-sm text-muted-foreground">
+      {county && countyUtilities
+        ? `Showing the MPSC-regulated electric utilities that serve ${county} County. A utility may serve only part of the county, and a cooperative or municipal utility that is not in the MPSC rate table may serve your address. Check your bill for your utility's name.`
+        : county
+          ? `No MPSC-regulated utility is on record for ${county} County, so every utility is shown. Your electricity may come from a cooperative or municipal utility, which the MPSC rate table does not cover. Check your bill for your utility's name.`
+          : "Every MPSC-regulated electric utility is shown. Each serves only part of Michigan, so select a county on the map or check your bill for your utility's name."}
+    </p>
+  );
+}
+
 export function ElectricRateHistory({ county }: { county: string | null }) {
   const query = useQuery({
     queryKey: ["electric-rate-history"],
@@ -158,22 +180,6 @@ export function ElectricRateHistory({ county }: { county: string | null }) {
 
   return (
     <div className="space-y-4">
-      <p className="rounded-lg border bg-surface p-3 text-sm text-muted-foreground">
-        {county && countyUtilities
-          ? `Showing the MPSC-regulated electric utilities that serve ${county} County. A utility may serve only part of the county, and a cooperative or municipal utility that is not in the MPSC rate table may serve your address. Check your bill for your utility's name.`
-          : county
-            ? `No MPSC-regulated utility is on record for ${county} County, so every utility is shown. Your electricity may come from a cooperative or municipal utility, which the MPSC rate table does not cover. Check your bill for your utility's name.`
-            : "Every MPSC-regulated electric utility is shown. Each serves only part of Michigan, so select a county on the map or check your bill for your utility's name."}
-      </p>
-
-      {utilities.includes("UMERC (formerly WEPCO)") &&
-        utilities.includes("UMERC (formerly WPSC)") && (
-          <p className="rounded-lg border bg-surface p-3 text-sm text-muted-foreground">
-            Upper Michigan Energy Resources has two rate zones with different rates. In Menominee
-            County the zone depends on your township, so check your bill to see which applies.
-          </p>
-        )}
-
       <section
         aria-label="Latest rates for every regulated utility"
         className="rounded-lg border bg-card p-4"
@@ -326,6 +332,13 @@ export function ElectricRateHistory({ county }: { county: string | null }) {
             stored values that have not yet been checked against a published MPSC table.
           </p>
         )}
+        {selected.includes("UMERC (formerly WEPCO)") &&
+          selected.includes("UMERC (formerly WPSC)") && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              Upper Michigan Energy Resources has two rate zones with different rates. In Menominee
+              County the zone depends on your township, so check your bill to see which applies.
+            </p>
+          )}
       </section>
     </div>
   );
