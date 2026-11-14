@@ -76,7 +76,8 @@ export const utilityDatasets: UtilityDataset[] = [
   },
 ];
 
-export type MapMetricKey = "burden" | "rate";
+/** The map shows energy burden only. A statewide or per-provider average rate does not apply to a county map. */
+export type MapMetricKey = "burden";
 
 export type MapMetric = {
   key: MapMetricKey;
@@ -95,17 +96,7 @@ export const mapMetrics: MapMetric[] = [
     unit: "% of household income",
     values: {},
     source: null,
-    comingSoonNote:
-      "County energy burden is shaded here from the DOE LEAD Tool dataset.",
-  },
-  {
-    key: "rate",
-    label: "Average rate",
-    unit: "¢/kWh",
-    values: {},
-    source: null,
-    comingSoonNote:
-      "County average rates will be shaded here once the rate dataset is connected.",
+    comingSoonNote: "County energy burden is shaded here from the DOE LEAD Tool dataset.",
   },
 ];
 
