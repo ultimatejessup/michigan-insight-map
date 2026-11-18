@@ -18,7 +18,6 @@ import { Route as PledgeRouteImport } from './routes/pledge'
 import { Route as SourcesRouteImport } from './routes/sources'
 import { Route as SurveyRouteImport } from './routes/survey'
 import { Route as WaterServiceLinesRouteImport } from './routes/water-service-lines'
-import { Route as ApiBillExplainRouteImport } from './routes/api/bill-explain'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -65,11 +64,6 @@ const WaterServiceLinesRoute = WaterServiceLinesRouteImport.update({
   path: '/water-service-lines',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiBillExplainRoute = ApiBillExplainRouteImport.update({
-  id: '/api/bill-explain',
-  path: '/api/bill-explain',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -81,7 +75,6 @@ export interface FileRoutesByFullPath {
   '/sources': typeof SourcesRoute
   '/survey': typeof SurveyRoute
   '/water-service-lines': typeof WaterServiceLinesRoute
-  '/api/bill-explain': typeof ApiBillExplainRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -93,7 +86,6 @@ export interface FileRoutesByTo {
   '/sources': typeof SourcesRoute
   '/survey': typeof SurveyRoute
   '/water-service-lines': typeof WaterServiceLinesRoute
-  '/api/bill-explain': typeof ApiBillExplainRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -106,7 +98,6 @@ export interface FileRoutesById {
   '/sources': typeof SourcesRoute
   '/survey': typeof SurveyRoute
   '/water-service-lines': typeof WaterServiceLinesRoute
-  '/api/bill-explain': typeof ApiBillExplainRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -120,7 +111,6 @@ export interface FileRouteTypes {
     | '/sources'
     | '/survey'
     | '/water-service-lines'
-    | '/api/bill-explain'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -132,7 +122,6 @@ export interface FileRouteTypes {
     | '/sources'
     | '/survey'
     | '/water-service-lines'
-    | '/api/bill-explain'
   id:
     | '__root__'
     | '/'
@@ -144,7 +133,6 @@ export interface FileRouteTypes {
     | '/sources'
     | '/survey'
     | '/water-service-lines'
-    | '/api/bill-explain'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -157,7 +145,6 @@ export interface RootRouteChildren {
   SourcesRoute: typeof SourcesRoute
   SurveyRoute: typeof SurveyRoute
   WaterServiceLinesRoute: typeof WaterServiceLinesRoute
-  ApiBillExplainRoute: typeof ApiBillExplainRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -225,13 +212,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WaterServiceLinesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/bill-explain': {
-      id: '/api/bill-explain'
-      path: '/api/bill-explain'
-      fullPath: '/api/bill-explain'
-      preLoaderRoute: typeof ApiBillExplainRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -245,7 +225,6 @@ const rootRouteChildren: RootRouteChildren = {
   SourcesRoute: SourcesRoute,
   SurveyRoute: SurveyRoute,
   WaterServiceLinesRoute: WaterServiceLinesRoute,
-  ApiBillExplainRoute: ApiBillExplainRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
