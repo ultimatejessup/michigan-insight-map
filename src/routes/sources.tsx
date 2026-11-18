@@ -7,8 +7,8 @@ export const Route = createFileRoute("/sources")({
   head: () =>
     pageHead(
       "/sources",
-      "Sources — Michigan Essentials Watch",
-      "The agencies, datasets and documents Michigan Essentials Watch uses for utility rates, rate actions, energy burden, population and broadband figures.",
+      "Sources — Michigan Utility Watch",
+      "The agencies, datasets and documents Michigan Utility Watch uses for utility rates, rate actions, energy burden, population and broadband figures.",
     ),
   component: SourcesPage,
 });
@@ -54,7 +54,7 @@ function SourcesPage() {
   });
   return (
     <article className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-      <p className="font-semibold text-accent-strong">Michigan Essentials Watch</p>
+      <p className="font-semibold text-accent-strong">Michigan Utility Watch</p>
       <h1 className="mt-2 font-display text-4xl font-extrabold text-primary">Sources</h1>
       <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
         Where the figures on this site come from. Each figure on the tracker is shown as stored from

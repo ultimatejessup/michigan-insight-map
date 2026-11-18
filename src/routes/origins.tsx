@@ -6,8 +6,8 @@ export const Route = createFileRoute("/origins")({
   head: () =>
     pageHead(
       "/origins",
-      "Origins — Michigan Essentials Watch",
-      "How the Liberation Caucus built Michigan Essentials Watch: a utility rate tracker with transparent sources and an optional, privacy-first bill explainer.",
+      "Origins — Michigan Utility Watch",
+      "How the Liberation Caucus built Michigan Utility Watch: a utility rate tracker with transparent sources and an optional, privacy-first bill explainer.",
     ),
   component: OriginsPage,
 });
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/origins")({
 function OriginsPage() {
   return (
     <article className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-      <p className="font-semibold text-accent-strong">Michigan Essentials Watch</p>
+      <p className="font-semibold text-accent-strong">Michigan Utility Watch</p>
       <h1 className="mt-2 font-display text-4xl font-extrabold text-primary">Origins</h1>
       <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
         A public advocacy tool by the Liberation Caucus, built to help Michigan residents understand
@@ -29,7 +29,7 @@ function OriginsPage() {
             broadband, county by county, and how utilities and states compare. It was built around
             residents’ questions: What are we paying? Where does the information come from? Who
             makes decisions about utility service? Those questions also shaped the utility story
-            page and the candidate pledge.
+            page.
           </p>
         </section>
         <section>

@@ -9,7 +9,6 @@ export function SiteFooter() {
           <nav aria-label="Footer" className="flex flex-wrap content-start items-start gap-x-6 gap-y-3 text-base font-semibold">
             <Link to="/" className="underline underline-offset-4 hover:text-accent">Tracker</Link>
             <Link to="/survey" className="underline underline-offset-4 hover:text-accent">Survey</Link>
-            <Link to="/pledge" className="underline underline-offset-4 hover:text-accent">Pledge</Link>
             <Link to="/bill-check" className="underline underline-offset-4 hover:text-accent">Bill Check</Link>
             <Link to="/build" className="underline underline-offset-4 hover:text-accent">Build</Link>
             <Link to="/origins" className="underline underline-offset-4 hover:text-accent">Origins</Link>

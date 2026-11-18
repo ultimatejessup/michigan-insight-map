@@ -1,10 +1,11 @@
-# Claude handoff — Michigan Essentials Watch
+# Claude handoff — Michigan Utility Watch
 
 Read `AGENTS.md` before making changes.
 
 ## Transfer state
-- Main navigation includes Tracker, Survey, Pledge, Bill Check and Build. The header no longer has the organizational byline.
-- Footer site links include Disclaimers together with Tracker, Survey, Pledge, Bill Check, Build and Origins, with contact beside them; the exact non-endorsement line sits below a divider.
+- The site name is Michigan Utility Watch (renamed from Michigan Essentials Watch on Nov 18, including page titles and og:site_name).
+- Main navigation includes Tracker, Survey, Bill Check and Build. The Pledge page is not public: `PLEDGE_PUBLIC` in `src/lib/site-flags.ts` is false, so `/pledge` redirects home and the link is gone from the header, footer and home page; `public/robots.txt` disallows it. To publish: set the flag true, restore the links and remove the Disallow lines. The header no longer has the organizational byline.
+- Footer site links include Disclaimers together with Tracker, Survey, Bill Check, Build and Origins, with contact beside them; the exact non-endorsement line sits below a divider.
 - `/disclaimers` holds the detailed data privacy, terms of service and content rights notices. Keep the short non-endorsement line in the shared footer.
 - `/origins` explains the tracker, the Liberation Caucus (approved mission wording) and AI-assisted development without naming the tool, and does not claim a fully loaded tracker. Do not add claims about Michigan Forward or national wage-burden work until the owner supplies facts.
 - `/build` offers campaign, newsletter and SMS choices through an explicit email-request flow, not automated enrollment.

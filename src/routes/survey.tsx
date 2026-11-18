@@ -6,7 +6,7 @@ export const Route = createFileRoute("/survey")({
   head: () =>
     pageHead(
       "/survey",
-      "Ratepayer Survey — Michigan Essentials Watch",
+      "Ratepayer Survey — Michigan Utility Watch",
       "Tell us what you pay and what you've faced with your electric, gas, water or broadband service in Michigan.",
     ),
   component: SurveyPage,

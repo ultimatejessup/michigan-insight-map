@@ -1,4 +1,4 @@
-# Michigan Essentials Watch — roadmap (restarted Oct 12)
+# Michigan Utility Watch — roadmap (restarted Oct 12)
 
 ## Footer notices and Claude transfer
 - [x] Put links and contact first in the footer
@@ -12,7 +12,7 @@
 - [x] Add factual Origins page linked from the footer
 - [ ] Automated signup and update delivery — BLOCKED: existing project connection and signup/delivery service are not configured; provide an explicit email-request alternative
 
-- [x] Name "Michigan Essentials Watch" by Liberation Caucus; title "Michigan" black + rest blue, Zap badge
+- [x] Name "Michigan Essentials Watch" by Liberation Caucus (renamed Michigan Utility Watch on Nov 18); title "Michigan" black + rest blue, Zap badge
 - [x] Canonical + OG on https://miutilitywatch.com per route
 - [x] Routes: / tracker, /survey, /pledge; header nav; footer non-endorsement line
 - [x] Tracker: map left / details right, no invented data ("coming soon")

@@ -13,7 +13,7 @@ export const Route = createFileRoute("/water-service-lines")({
   head: () =>
     pageHead(
       "/water-service-lines",
-      "Lead service lines by water system — Michigan Essentials Watch",
+      "Lead service lines by water system — Michigan Utility Watch",
       "Statewide list of Michigan public water systems with service line counts by material, from the EGLE Distribution System Materials Inventory. Search and download as CSV.",
     ),
   component: ServiceLinesPage,
@@ -44,7 +44,7 @@ function ServiceLinesPage() {
 
   return (
     <article className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <p className="font-semibold text-accent-strong">Michigan Essentials Watch</p>
+      <p className="font-semibold text-accent-strong">Michigan Utility Watch</p>
       <h1 className="mt-2 font-display text-4xl font-extrabold text-primary">
         Lead service lines by water system
       </h1>

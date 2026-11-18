@@ -14,7 +14,7 @@ export const Route = createFileRoute("/bill-check")({
   head: () =>
     pageHead(
       "/bill-check",
-      "Bill Explainer — Michigan Essentials Watch",
+      "Bill Explainer — Michigan Utility Watch",
       "Read your Michigan utility bill on your own device, check the text, then get a plain-language explanation of each charge. Nothing is sent anywhere.",
     ),
   component: BillCheckPage,
