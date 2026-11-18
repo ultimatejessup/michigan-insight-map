@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { burdenForCounty, fetchEnergyBurden } from "@/lib/census/energy-burden";
+import { ACS_SOURCE, fetchCountyProfiles, profileForCounty } from "@/lib/census/county-profile";
 import { SourceLine } from "./source-line";
 
 const usd = new Intl.NumberFormat("en-US", {
@@ -24,6 +25,13 @@ export function EnergyBurdenSection({ county, place }: { county: string | null; 
     staleTime: 24 * 60 * 60 * 1000,
     retry: 1,
   });
+  const profileQuery = useQuery({
+    queryKey: ["county-profiles"],
+    queryFn: ({ signal }) => fetchCountyProfiles(signal),
+    staleTime: 24 * 60 * 60 * 1000,
+    retry: 1,
+  });
+  const profile = profileQuery.data ? profileForCounty(profileQuery.data, county) : null;
   const data = query.data ? burdenForCounty(query.data, county) : null;
   const source = data?.sourceUrl
     ? {
@@ -105,6 +113,23 @@ export function EnergyBurdenSection({ county, place }: { county: string | null; 
             are measured against the federal poverty line.
           </p>
           <SourceLine source={source} />
+          {profile && profile.blackSharePct !== null && (
+            <div className="mt-3 border-t pt-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Read alongside
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Black residents are{" "}
+                <strong className="font-display text-base text-primary">
+                  {profile.blackSharePct.toFixed(1)}%
+                </strong>{" "}
+                of the population of {data.county} County (Census ACS, data year {profile.dataYear}
+                ). This is shown next to the burden figures for context. Energy burden is not
+                published by race for counties, so these two numbers are not combined.
+              </p>
+              <SourceLine source={ACS_SOURCE} />
+            </div>
+          )}
         </>
       )}
     </section>

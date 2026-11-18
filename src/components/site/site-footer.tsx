@@ -13,6 +13,8 @@ export function SiteFooter() {
             <Link to="/bill-check" className="underline underline-offset-4 hover:text-accent">Bill Check</Link>
             <Link to="/build" className="underline underline-offset-4 hover:text-accent">Build</Link>
             <Link to="/origins" className="underline underline-offset-4 hover:text-accent">Origins</Link>
+            <Link to="/water-service-lines" className="underline underline-offset-4 hover:text-accent">Lead Lines</Link>
+            <Link to="/sources" className="underline underline-offset-4 hover:text-accent">Sources</Link>
             <Link to="/disclaimers" className="underline underline-offset-4 hover:text-accent">Disclaimers</Link>
           </nav>
           <section aria-labelledby="footer-contact">
