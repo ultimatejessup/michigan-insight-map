@@ -4,8 +4,8 @@ import { pageHead } from "@/lib/seo";
 export const Route = createFileRoute("/disclaimers")({
   head: () => pageHead(
     "/disclaimers",
-    "Privacy, Terms & Content Rights — Michigan Essentials Watch",
-    "Data privacy, terms of service, content rights and non-endorsement notices for Michigan Essentials Watch.",
+    "Privacy, Terms & Content Rights — Michigan Utility Watch",
+    "Data privacy, terms of service, content rights and non-endorsement notices for Michigan Utility Watch.",
   ),
   component: DisclaimersPage,
 });
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/disclaimers")({
 function DisclaimersPage() {
   return (
     <article className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-      <p className="font-semibold text-accent-strong">Michigan Essentials Watch</p>
+      <p className="font-semibold text-accent-strong">Michigan Utility Watch</p>
       <h1 className="mt-2 font-display text-3xl font-extrabold text-primary sm:text-4xl">Privacy, terms & content rights</h1>
       <p className="mt-4 text-lg leading-relaxed text-muted-foreground">Information about using this site and choosing what to share.</p>
       <div className="mt-8 space-y-8 border-t pt-8 text-base leading-relaxed">

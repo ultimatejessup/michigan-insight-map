@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/build")({
-  head: () => pageHead("/build", "Build — Join Michigan Essentials Watch", "Join the Michigan Essentials Watch advocacy campaign and request newsletter or SMS updates."),
+  head: () => pageHead("/build", "Build — Join Michigan Utility Watch", "Join the Michigan Utility Watch advocacy campaign and request newsletter or SMS updates."),
   component: BuildPage,
 });
 
@@ -27,7 +27,7 @@ function BuildPage() {
     }
     const data = new FormData(event.currentTarget);
     const body = [
-      "I would like to get involved with Michigan Essentials Watch.",
+      "I would like to get involved with Michigan Utility Watch.",
       `Name: ${String(data.get("name") ?? "").trim()}`,
       `Email: ${String(data.get("email") ?? "").trim()}`,
       `Join the campaign: ${campaign ? "Yes" : "No"}`,
@@ -37,12 +37,12 @@ function BuildPage() {
     ].join("\n");
     setError("");
     setPrepared(true);
-    window.location.href = `mailto:power@miutilitywatch.com?subject=${encodeURIComponent("Michigan Essentials Watch — signup request")}&body=${encodeURIComponent(body)}`;
+    window.location.href = `mailto:power@miutilitywatch.com?subject=${encodeURIComponent("Michigan Utility Watch — signup request")}&body=${encodeURIComponent(body)}`;
   }
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-      <p className="font-semibold text-accent-strong">Michigan Essentials Watch</p>
+      <p className="font-semibold text-accent-strong">Michigan Utility Watch</p>
       <h1 className="mt-2 font-display text-4xl font-extrabold text-primary">Build with us</h1>
       <p className="mt-4 text-lg leading-relaxed text-muted-foreground">Join the campaign for accountable utility service in Michigan. Choose how you want to stay involved.</p>
       <form onSubmit={submit} className="mt-8 space-y-6 border-t pt-6">

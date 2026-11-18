@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { PLEDGE_PUBLIC } from "@/lib/site-flags";
 import { useState, type FormEvent } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -10,6 +11,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/pledge")({
+  // Not public yet: send visitors home. See src/lib/site-flags.ts.
+  beforeLoad: () => {
+    if (!PLEDGE_PUBLIC) throw redirect({ to: "/" });
+  },
   head: () =>
     pageHead(
       "/pledge",

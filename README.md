@@ -1,4 +1,4 @@
-# Michigan Essentials Watch
+# Michigan Utility Watch
 
 A public advocacy tool from the [Liberation Caucus](https://liberationcaucus.com) at
 [miutilitywatch.com](https://miutilitywatch.com). It helps Michigan residents see what they pay for

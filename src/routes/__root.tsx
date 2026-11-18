@@ -81,7 +81,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "author", content: "Liberation Caucus" },
       { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "Michigan Essentials Watch" },
+      { property: "og:site_name", content: "Michigan Utility Watch" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [

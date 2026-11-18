@@ -1,5 +1,5 @@
 export const SITE_URL = "https://miutilitywatch.com";
-export const SITE_NAME = "Michigan Essentials Watch";
+export const SITE_NAME = "Michigan Utility Watch";
 
 export function pageHead(path: string, title: string, description: string) {
   const url = `${SITE_URL}${path}`;

@@ -4,7 +4,6 @@ import { Zap } from "lucide-react";
 const links = [
   { to: "/", label: "Tracker", exact: true },
   { to: "/survey", label: "Survey", exact: false },
-  { to: "/pledge", label: "Pledge", exact: false },
   { to: "/bill-check", label: "Bill Check", exact: false },
   { to: "/build", label: "Build", exact: false },
 ] as const;

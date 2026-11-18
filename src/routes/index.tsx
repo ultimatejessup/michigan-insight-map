@@ -10,7 +10,7 @@ export const Route = createFileRoute("/")({
   head: () =>
     pageHead(
       "/",
-      "Michigan Essentials Watch — Utility Rate Tracker",
+      "Michigan Utility Watch — Utility Rate Tracker",
       "See what Michigan households pay for electric, natural gas, water and broadband, county by county.",
     ),
   component: TrackerPage,
@@ -30,14 +30,11 @@ function TrackerPage() {
           </h1>
           <p className="mt-2 max-w-3xl text-base text-muted-foreground">
             Track what Michigan households pay for essential utilities, county by county. Then tell
-            us your experience and ask candidates where they stand.
+            us your experience.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <Button asChild variant="accent">
               <Link to="/survey">Take the Survey</Link>
-            </Button>
-            <Button asChild variant="outlinePrimary">
-              <Link to="/pledge">Take the Candidate Pledge</Link>
             </Button>
             <Button asChild variant="outlinePrimary">
               <Link to="/bill-check">Explain my bill</Link>
