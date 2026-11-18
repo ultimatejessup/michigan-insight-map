@@ -1,6 +1,6 @@
 // County population and income from the Census Bureau's American Community Survey (ACS) 5-year
 // estimates, stored in geo_demographics. Stored values only: nothing is computed here.
-// Margins of error are not stored, so none are shown.
+// The income margin of error (median_household_income_moe) is stored and shown when present.
 
 export const ACS_SOURCE = {
   label: "U.S. Census Bureau, American Community Survey 5-year estimates",
@@ -12,7 +12,9 @@ export type CountyProfile = {
   dataYear: number;
   population: number | null;
   medianHouseholdIncome: number | null;
-  /** Share of residents who are Black, in percent (stored value, e.g. 37.2). */
+  /** ACS 90% margin of error for the median household income, in dollars (stored value). */
+  medianHouseholdIncomeMoe: number | null;
+  /** Share of residents who are Black alone and not Hispanic or Latino, in percent (stored value, e.g. 36.56). */
   blackSharePct: number | null;
 };
 
@@ -60,6 +62,7 @@ export function parseCountyProfiles(rows: unknown): Map<string, CountyProfile> {
       dataYear: year,
       population: num(r["total_population"]),
       medianHouseholdIncome: num(r["median_household_income"]),
+      medianHouseholdIncomeMoe: num(r["median_household_income_moe"]),
       blackSharePct: black ? num(black["pct_of_population"]) : null,
     });
   }
@@ -81,7 +84,7 @@ export async function fetchCountyProfiles(
   if (!url || !key) return null;
   const query = new URLSearchParams({
     select:
-      "data_year,total_population,median_household_income,geographies!inner(name,level,geoid)",
+      "data_year,total_population,median_household_income,median_household_income_moe,geo_demographics_race(race_category,pct_of_population),geographies!inner(name,level,geoid)",
     "geographies.level": "eq.county",
     "geographies.geoid": "like.26*",
     limit: "1000",
