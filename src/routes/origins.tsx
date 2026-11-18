@@ -86,10 +86,10 @@ function OriginsPage() {
           <p className="mt-3">
             Questions or corrections? Contact{" "}
             <a
-              href="mailto:power@miutilitieswatch.com"
+              href="mailto:power@miutilitywatch.com"
               className="break-all font-semibold text-primary underline underline-offset-4"
             >
-              power@miutilitieswatch.com
+              power@miutilitywatch.com
             </a>
             .
           </p>

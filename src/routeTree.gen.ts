@@ -13,6 +13,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as BillCheckRouteImport } from './routes/bill-check'
 import { Route as BuildRouteImport } from './routes/build'
 import { Route as DisclaimersRouteImport } from './routes/disclaimers'
+import { Route as WaterServiceLinesRouteImport } from './routes/water-service-lines'
+import { Route as SourcesRouteImport } from './routes/sources'
 import { Route as OriginsRouteImport } from './routes/origins'
 import { Route as PledgeRouteImport } from './routes/pledge'
 import { Route as SurveyRouteImport } from './routes/survey'
@@ -36,6 +38,16 @@ const BuildRoute = BuildRouteImport.update({
 const DisclaimersRoute = DisclaimersRouteImport.update({
   id: '/disclaimers',
   path: '/disclaimers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WaterServiceLinesRoute = WaterServiceLinesRouteImport.update({
+  id: '/water-service-lines',
+  path: '/water-service-lines',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SourcesRoute = SourcesRouteImport.update({
+  id: '/sources',
+  path: '/sources',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OriginsRoute = OriginsRouteImport.update({
@@ -65,6 +77,8 @@ export interface FileRoutesByFullPath {
   '/build': typeof BuildRoute
   '/disclaimers': typeof DisclaimersRoute
   '/origins': typeof OriginsRoute
+  '/sources': typeof SourcesRoute
+  '/water-service-lines': typeof WaterServiceLinesRoute
   '/pledge': typeof PledgeRoute
   '/survey': typeof SurveyRoute
   '/api/bill-explain': typeof ApiBillExplainRoute
@@ -75,6 +89,8 @@ export interface FileRoutesByTo {
   '/build': typeof BuildRoute
   '/disclaimers': typeof DisclaimersRoute
   '/origins': typeof OriginsRoute
+  '/sources': typeof SourcesRoute
+  '/water-service-lines': typeof WaterServiceLinesRoute
   '/pledge': typeof PledgeRoute
   '/survey': typeof SurveyRoute
   '/api/bill-explain': typeof ApiBillExplainRoute
@@ -86,6 +102,8 @@ export interface FileRoutesById {
   '/build': typeof BuildRoute
   '/disclaimers': typeof DisclaimersRoute
   '/origins': typeof OriginsRoute
+  '/sources': typeof SourcesRoute
+  '/water-service-lines': typeof WaterServiceLinesRoute
   '/pledge': typeof PledgeRoute
   '/survey': typeof SurveyRoute
   '/api/bill-explain': typeof ApiBillExplainRoute
@@ -98,6 +116,8 @@ export interface FileRouteTypes {
     | '/build'
     | '/disclaimers'
     | '/origins'
+    | '/sources'
+    | '/water-service-lines'
     | '/pledge'
     | '/survey'
     | '/api/bill-explain'
@@ -108,6 +128,8 @@ export interface FileRouteTypes {
     | '/build'
     | '/disclaimers'
     | '/origins'
+    | '/sources'
+    | '/water-service-lines'
     | '/pledge'
     | '/survey'
     | '/api/bill-explain'
@@ -118,6 +140,8 @@ export interface FileRouteTypes {
     | '/build'
     | '/disclaimers'
     | '/origins'
+    | '/sources'
+    | '/water-service-lines'
     | '/pledge'
     | '/survey'
     | '/api/bill-explain'
@@ -129,6 +153,8 @@ export interface RootRouteChildren {
   BuildRoute: typeof BuildRoute
   DisclaimersRoute: typeof DisclaimersRoute
   OriginsRoute: typeof OriginsRoute
+  SourcesRoute: typeof SourcesRoute
+  WaterServiceLinesRoute: typeof WaterServiceLinesRoute
   PledgeRoute: typeof PledgeRoute
   SurveyRoute: typeof SurveyRoute
   ApiBillExplainRoute: typeof ApiBillExplainRoute
@@ -162,6 +188,20 @@ declare module '@tanstack/react-router' {
       path: '/disclaimers'
       fullPath: '/disclaimers'
       preLoaderRoute: typeof DisclaimersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/water-service-lines': {
+      id: '/water-service-lines'
+      path: '/water-service-lines'
+      fullPath: '/water-service-lines'
+      preLoaderRoute: typeof WaterServiceLinesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sources': {
+      id: '/sources'
+      path: '/sources'
+      fullPath: '/sources'
+      preLoaderRoute: typeof SourcesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/origins': {
@@ -201,6 +241,8 @@ const rootRouteChildren: RootRouteChildren = {
   BuildRoute: BuildRoute,
   DisclaimersRoute: DisclaimersRoute,
   OriginsRoute: OriginsRoute,
+  SourcesRoute: SourcesRoute,
+  WaterServiceLinesRoute: WaterServiceLinesRoute,
   PledgeRoute: PledgeRoute,
   SurveyRoute: SurveyRoute,
   ApiBillExplainRoute: ApiBillExplainRoute,

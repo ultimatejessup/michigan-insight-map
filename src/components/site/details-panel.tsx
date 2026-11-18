@@ -1,40 +1,29 @@
-import { Link } from "@tanstack/react-router";
-import { utilityDatasets, type UtilityDataset } from "@/data/utility-data";
-import { SourceLine } from "./source-line";
-import { ElectricRateHistory, ElectricScopeNote } from "./electric-rate-history";
 import { useState } from "react";
+import { ElectricRateHistory, ElectricScopeNote } from "./electric-rate-history";
+import { GasRateHistory } from "./gas-rate-history";
 import { CountyProfileCard } from "./county-profile-card";
 import { EnergyBurdenSection } from "./energy-burden-section";
+import { ProvidersSection } from "./providers-section";
+import { RaceReferenceSection } from "./race-reference-section";
+import { RateActionsSection } from "./rate-actions-section";
+import { SnapshotCards } from "./snapshot-cards";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-function ComingSoon({ dataset }: { dataset: UtilityDataset }) {
-  return (
-    <div className="rounded-lg border border-dashed bg-surface p-6">
-      <p className="font-display text-base font-bold text-primary">Data coming soon</p>
-      <p className="mt-2 text-sm text-muted-foreground">{dataset.comingSoonNote}</p>
-      <Link
-        to="/survey"
-        className="mt-4 inline-flex rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:bg-accent-strong hover:text-primary-foreground"
-      >
-        Tell us what you pay
-      </Link>
-      <SourceLine source={dataset.source} />
-    </div>
-  );
-}
+/**
+ * Tabs hold data that exists for the selected county or its utilities. Water and broadband are
+ * snapshot cards in the county area (no rate history); a statewide Water tab is added once data exists.
+ */
+const TABS = [
+  { key: "electric", label: "Electric" },
+  { key: "gas", label: "Natural Gas" },
+  { key: "actions", label: "Rate Actions" },
+  { key: "burden", label: "Energy Burden" },
+] as const;
 
-function StatCard({ label, dataset }: { label: string; dataset: UtilityDataset }) {
-  return (
-    <div className="rounded-lg border bg-card p-4">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="mt-1 font-display text-xl font-bold text-primary">Coming soon</p>
-      <SourceLine source={dataset.source} />
-    </div>
-  );
-}
+type TabKey = (typeof TABS)[number]["key"];
 
 export function DetailsPanel({ county }: { county: string | null }) {
-  const [tab, setTab] = useState<string>(utilityDatasets[0]?.key ?? "electric");
+  const [tab, setTab] = useState<TabKey>("electric");
   const place = county === null ? "Michigan (statewide)" : `${county} County`;
   return (
     <div className="rounded-lg border bg-card p-4 shadow-card sm:p-6">
@@ -48,39 +37,32 @@ export function DetailsPanel({ county }: { county: string | null }) {
 
       <CountyProfileCard county={county} />
 
-      <Tabs value={tab} onValueChange={setTab} className="mt-4">
+      <ProvidersSection county={county} />
+
+      <SnapshotCards county={county} />
+
+      <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)} className="mt-4">
         <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 bg-surface p-1">
-          {utilityDatasets.map((d) => (
-            <TabsTrigger key={d.key} value={d.key} className="text-sm font-semibold">
-              {d.label}
+          {TABS.map((t) => (
+            <TabsTrigger key={t.key} value={t.key} className="text-sm font-semibold">
+              {t.label}
             </TabsTrigger>
           ))}
         </TabsList>
 
-        {utilityDatasets.map((dataset) => (
-          <TabsContent key={dataset.key} value={dataset.key} className="mt-4 space-y-4">
-            {dataset.key === "electric" ? (
-              <ElectricRateHistory county={county} />
-            ) : (
-              <>
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <StatCard label="Current rate" dataset={dataset} />
-                  <StatCard label="Change over 12 months" dataset={dataset} />
-                  <StatCard label="Change since 2018" dataset={dataset} />
-                </div>
-
-                <section aria-label={`${dataset.label} rate history`}>
-                  <h3 className="font-display text-base font-bold">{dataset.label} rate history</h3>
-                  <div className="mt-2">
-                    <ComingSoon dataset={dataset} />
-                  </div>
-                </section>
-              </>
-            )}
-
-            <EnergyBurdenSection county={county} place={place} />
-          </TabsContent>
-        ))}
+        <TabsContent value="electric" className="mt-4 space-y-4">
+          <ElectricRateHistory county={county} />
+        </TabsContent>
+        <TabsContent value="gas" className="mt-4 space-y-4">
+          <GasRateHistory county={county} />
+        </TabsContent>
+        <TabsContent value="actions" className="mt-4 space-y-4">
+          <RateActionsSection county={county} />
+        </TabsContent>
+        <TabsContent value="burden" className="mt-4 space-y-4">
+          <EnergyBurdenSection county={county} place={place} />
+          <RaceReferenceSection />
+        </TabsContent>
       </Tabs>
     </div>
   );

@@ -37,7 +37,7 @@ function BuildPage() {
     ].join("\n");
     setError("");
     setPrepared(true);
-    window.location.href = `mailto:power@miutilitieswatch.com?subject=${encodeURIComponent("Michigan Essentials Watch — signup request")}&body=${encodeURIComponent(body)}`;
+    window.location.href = `mailto:power@miutilitywatch.com?subject=${encodeURIComponent("Michigan Essentials Watch — signup request")}&body=${encodeURIComponent(body)}`;
   }
 
   return (
@@ -60,7 +60,7 @@ function BuildPage() {
         <p className="text-base leading-relaxed text-muted-foreground">Signup is currently handled by email. Your request opens in your email app; you must send it to reach the team. Contact details are not published on this site.</p>
         {error ? <p role="alert" className="text-destructive">{error}</p> : null}
         <Button type="submit" variant="accent" size="lg"><Mail aria-hidden="true" /> Request to join <ArrowRight aria-hidden="true" /></Button>
-        {prepared ? <p role="status" className="border-l-4 border-accent bg-surface p-4">Your email draft is ready. Send it from your email app to submit your request. If no draft opened, email <a href="mailto:power@miutilitieswatch.com" className="break-all font-semibold text-primary underline">power@miutilitieswatch.com</a> with your preferred updates.</p> : null}
+        {prepared ? <p role="status" className="border-l-4 border-accent bg-surface p-4">Your email draft is ready. Send it from your email app to submit your request. If no draft opened, email <a href="mailto:power@miutilitywatch.com" className="break-all font-semibold text-primary underline">power@miutilitywatch.com</a> with your preferred updates.</p> : null}
       </form>
     </div>
   );
