@@ -130,3 +130,99 @@ describe("glossary", () => {
     expect(a.utility).toBe("unknown");
   });
 });
+
+// Fictional text laid out the way a DTE-style PDF extracts: unicode minus signs, amounts without
+// "$", two columns on one line, usage math in front of the amount, and a mixed electric + gas bill.
+const DTE_STYLE = `Due Date:                              Nov 18, 2024
+Total Due:                             $238.95
+Billing Period:   OCT 01, 2024 - NOV 01, 2024
+Last Month's Amount Due   0.00 Account Balance as of Sep 01, 2024   1,683.34
+Down Payment   16.84 Payment Received Sep 23, 2024   − 168.33
+Payment Received Sep 23, 2024   − 168.33 Thank You! Balance Prior to Current Charges   1,515.01
+Your average daily electric cost for this period was $2.99   Your average daily gas cost for this period was $1.67
+Power Supply Capacity Charge   18.27
+Power Supply Non Capacity Charge   23.25
+Distribution   496 KWH @ 0.061090   30.30 Usage History - Average per day
+Nuclear Surcharge   0.41
+Tax Credit B   −0.59
+U-18255 SIR   −0.32
+Residential Michigan Sales Tax   3.30
+Total DTE Electric Company Current Charges   86.71
+Gas Cost Recovery   19.08
+U-20298 Calc C   72 CCF @ -0.005760   −0.41   Meter Reading 2471 Actual - 2543 Actual
+IRM Surcharge   0.51
+Residential Michigan Sales Tax   1.86   Current Last   Year
+Total Current Charges   135.12`;
+
+const AUTOPAY = `Withdrawal Date:   July 18, 2023
+Withdrawal Amount:   $110.42
+Payment Received Jun 15, 2023 Thank You!   − 72.51
+Total Current Charges   110.42
+Amount to be Withdrawn on July 18, 2023   $110.42
+Service Charge   8.50
+Distribution   517.427 @ 0.068790   35.59`;
+
+describe("analyzeBill: DTE-style layout", () => {
+  const a = analyzeBill(DTE_STYLE);
+  const find = (l: string) =>
+    a.items.find((i) => i.label.toLowerCase().startsWith(l.toLowerCase()));
+
+  test("finds the due date and total even with wide spacing", () => {
+    expect(a.dueDate).toBe("Nov 18, 2024");
+    expect(a.totalDue).toBe("$238.95");
+    expect(a.currentCharges).toBe("$135.12");
+    expect(a.period).toBe("OCT 01, 2024 to NOV 01, 2024");
+    expect(a.autopay).toBe(false);
+  });
+  test("recognizes a combined electric and gas bill", () => {
+    expect(a.utility).toBe("combined");
+  });
+  test("treats a unicode minus as a credit and keeps the sign", () => {
+    expect(find("Tax Credit B")?.amount).toBe("-$0.59");
+    expect(find("Tax Credit B")?.isCredit).toBe(true);
+    expect(find("Tax Credit B")?.entry?.id).toBe("credit");
+    expect(find("U-20298")?.amount).toBe("-$0.41");
+    expect(find("Payment Received")?.amount).toBe("-$168.33");
+  });
+  test("splits two charges that share a line and drops the duplicate", () => {
+    expect(find("Down Payment")?.amount).toBe("$16.84");
+    expect(a.items.filter((i) => i.label.startsWith("Payment Received")).length).toBe(1);
+    expect(find("Balance Prior")?.entry?.id).toBe("previous-balance");
+  });
+  test("does not turn tips or messages into charges", () => {
+    expect(a.items.some((i) => /average daily/i.test(i.label))).toBe(false);
+    expect(a.items.some((i) => /^total/i.test(i.label))).toBe(false);
+  });
+  test("keeps the whole word Tax and does not cut a trailing x", () => {
+    expect(a.items.filter((i) => i.label === "Residential Michigan Sales Tax").length).toBe(2);
+  });
+  test("explains DTE-specific charges from the DTE explanation", () => {
+    expect(find("Nuclear")?.entry?.id).toBe("nuclear");
+    expect(find("Power Supply Capacity")?.entry?.id).toBe("capacity");
+    expect(find("Power Supply Non Capacity")?.entry?.id).toBe("non-capacity");
+    expect(find("IRM")?.entry?.id).toBe("infrastructure");
+  });
+  test("case-number adjustments are explained generally and flagged for a question", () => {
+    expect(find("U-18255")?.entry?.id).toBe("case-rider");
+    expect(a.flags.some((f) => f.id === "case-rider")).toBe(true);
+  });
+  test("the unit rate after @ is never read as a charge", () => {
+    expect(a.items.some((i) => i.amount === "$0.06" || i.amount === "$0.01")).toBe(false);
+    expect(find("Distribution")?.amount).toBe("$30.30");
+  });
+});
+
+describe("analyzeBill: automatic withdrawal", () => {
+  const a = analyzeBill(AUTOPAY);
+  test("labels the withdrawal as such and does not list it as a charge", () => {
+    expect(a.autopay).toBe(true);
+    expect(a.totalDue).toBe("$110.42");
+    expect(a.dueDate).toBe("July 18, 2023");
+    expect(a.items.some((i) => /withdraw/i.test(i.label))).toBe(false);
+  });
+  test("a payment with Thank You! keeps a clean label", () => {
+    expect(a.items.find((i) => i.amount === "-$72.51")?.label).toBe(
+      "Payment Received Jun 15, 2023",
+    );
+  });
+});

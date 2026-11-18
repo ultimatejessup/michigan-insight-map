@@ -8,7 +8,7 @@
 //  - Every entry points to a source. Add or change entries only after checking that source.
 //  - Order matters: the first matching entry wins, so put specific patterns before general ones.
 
-export type UtilityKind = "electric" | "gas" | "water" | "internet" | "unknown";
+export type UtilityKind = "electric" | "gas" | "water" | "internet" | "combined" | "unknown";
 
 export const SOURCES = {
   mpscGuide: {
@@ -54,7 +54,7 @@ export type GlossaryEntry = {
   question?: string;
   source?: SourceKey;
   /** Limits the entry to these bill types. Omit for any bill. Applies when the type is known. */
-  only?: Exclude<UtilityKind, "unknown">[];
+  only?: Exclude<UtilityKind, "unknown" | "combined">[];
 };
 
 export const GLOSSARY: GlossaryEntry[] = [
@@ -119,7 +119,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     id: "previous-balance",
     title: "Previous balance",
-    match: /previous balance|prior balance|balance forward|last bill/,
+    match: /previous balance|prior balance|balance prior|prior period|balance forward|last bill/,
     meaning:
       "What was owed at the end of your last bill. Payments you made since then should appear as separate credits.",
   },
@@ -184,8 +184,76 @@ export const GLOSSARY: GlossaryEntry[] = [
     match:
       /infrastructure|\birm\b|main replacement|pipeline replacement|reliability (charge|surcharge)|grid (charge|surcharge)/,
     meaning:
-      "A charge that helps pay for replacing or upgrading pipes, poles and wires. It is approved by the Michigan Public Service Commission.",
+      "A charge that helps pay for replacing or upgrading pipes, poles and wires, approved by the Michigan Public Service Commission. On DTE gas bills, the IRM surcharge funds replacing cast-iron service lines with newer, safer materials.",
     source: "dteGas",
+  },
+  {
+    id: "non-capacity",
+    title: "Non-capacity charge (peak or off-peak)",
+    match: /non.?capacity/,
+    meaning:
+      "Per DTE, this covers the variable costs of generating electricity, such as operations and maintenance. “On peak” means high-demand hours and “off peak” means low-demand hours.",
+    source: "dteGas",
+  },
+  {
+    id: "capacity",
+    title: "Capacity charge (peak or off-peak)",
+    match: /capacity (energy )?charge|capacity$/,
+    meaning:
+      "Per DTE, this covers the fixed costs of generating electricity. “On peak” means high-demand hours and “off peak” means low-demand hours.",
+    source: "dteGas",
+  },
+  {
+    id: "other-power-supply",
+    title: "Other power supply surcharges",
+    match: /other power supply/,
+    meaning:
+      "Per DTE, this includes securitization charges tied to retiring certain power plants, intended to produce long-term customer savings.",
+    source: "dteGas",
+  },
+  {
+    id: "other-delivery",
+    title: "Other delivery surcharges",
+    match: /other delivery/,
+    meaning:
+      "A group of delivery-related charges. Per DTE, the electric group includes the energy efficiency surcharge, a nuclear surcharge and a tree-trimming securitization charge. The gas group includes the energy efficiency surcharge.",
+    source: "dteGas",
+  },
+  {
+    id: "nuclear",
+    title: "Nuclear surcharge",
+    match: /nuclear/,
+    meaning:
+      "Per DTE, covers costs for decommissioning, low-level radioactive waste disposal, site security and radiation protection at its Fermi 2 nuclear plant.",
+    source: "dteGas",
+  },
+  {
+    id: "trm",
+    title: "Transitional Recovery Mechanism (TRM)",
+    match: /transitional recovery|\btrm\b/,
+    meaning:
+      "A charge approved by the Michigan Public Service Commission that lets DTE recover part of the cost of expanding its distribution system.",
+    source: "dteGas",
+  },
+  {
+    id: "case-rider",
+    title: "Adjustment named for a commission case number",
+    match: /^u-\d{3,5}\b/,
+    meaning:
+      "A line named for a Michigan Public Service Commission case number (U-#####). It is an adjustment approved in that case. The bill does not say what it covers.",
+    askAbout:
+      "The bill identifies this only by its case number. Ask your provider what it pays for or credits, or search the case number on the Commission's website.",
+    question: "What does the adjustment labeled with a case number (U-#####) on my bill cover?",
+  },
+  {
+    id: "payment-arrangement",
+    title: "Down payment or payment plan",
+    match: /down payment|payment arrangement|payment plan|installment/,
+    meaning: "A payment listed as part of a payment arrangement or plan.",
+    askAbout:
+      "Ask how the arrangement was set up, what you still owe under it, and what happens if a payment is missed.",
+    question:
+      "What payment arrangement is this down payment part of, and what do I still owe under it?",
   },
   {
     id: "power-supply",
@@ -209,7 +277,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     title: "Gas supply fees (reservation, balancing, acquisition)",
     match: /reservation|balancing|acquisition/,
     meaning:
-      "Smaller fees tied to securing and delivering your gas supply, listed beside the gas cost.",
+      "Smaller fees tied to securing your gas supply, listed beside the gas cost. Per DTE, the reservation charge pays for acquiring and storing enough gas to supply customers during extreme high-use weather.",
     source: "mpscGas",
   },
   {
@@ -232,7 +300,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     id: "tax",
     title: "Taxes",
-    match: /sales tax|use tax|state tax|\btax\b|taxes/,
+    match: /sales ta|use tax|state tax|\btax(es)?\b(?!\s+credit)/,
     meaning:
       "Michigan taxes added to your bill. On the residential energy bills we checked, the state tax is shown as a percent of the charges.",
     source: "dteGas",
@@ -323,7 +391,7 @@ export function lookupCharge(
 ): GlossaryEntry | null {
   const l = label.toLowerCase();
   for (const e of GLOSSARY) {
-    if (utility !== "unknown" && e.only && !e.only.includes(utility)) continue;
+    if (utility !== "unknown" && e.only && !(e.only as UtilityKind[]).includes(utility)) continue;
     if (e.match.test(l)) return e;
   }
   return null;
