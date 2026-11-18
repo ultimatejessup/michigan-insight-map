@@ -123,7 +123,7 @@ export function pivotForChart(points: ElectricRatePoint[], selected: string[]): 
   const byDate = new Map<string, ChartRow>();
   for (const p of points) {
     if (!keep.has(p.utility)) continue;
-    const row = byDate.get(p.readingDate) ?? { date: p.readingDate };
+    const row: ChartRow = byDate.get(p.readingDate) ?? { date: p.readingDate };
     row[p.utility] = p.value;
     byDate.set(p.readingDate, row);
   }
