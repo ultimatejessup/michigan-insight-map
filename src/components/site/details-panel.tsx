@@ -10,16 +10,15 @@ import { BroadbandCard, LeadLinesCard, WaterCard } from "./snapshot-cards";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 /**
- * Tabs hold data that exists for the selected county or its utilities. Water holds the lead service
- * line counts and the few water/sewer rates collected. Broadband lists fixed availability by place.
+ * Four tabs hold the utility data for the selected county: Electric, Natural Gas, Water (lead
+ * service line counts and the few water/sewer rates collected) and Broadband (fixed availability by
+ * place). Rate actions and energy burden sit below the tabs so the tab area stays uncrowded.
  */
 const TABS = [
   { key: "electric", label: "Electric" },
   { key: "gas", label: "Natural Gas" },
   { key: "water", label: "Water" },
   { key: "broadband", label: "Broadband" },
-  { key: "actions", label: "Rate Actions" },
-  { key: "burden", label: "Energy Burden" },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];
@@ -63,14 +62,13 @@ export function DetailsPanel({ county }: { county: string | null }) {
         <TabsContent value="broadband" className="mt-4 space-y-4">
           <BroadbandCard county={county} />
         </TabsContent>
-        <TabsContent value="actions" className="mt-4 space-y-4">
-          <RateActionsSection county={county} />
-        </TabsContent>
-        <TabsContent value="burden" className="mt-4 space-y-4">
-          <EnergyBurdenSection county={county} place={place} />
-          <RaceReferenceSection />
-        </TabsContent>
       </Tabs>
+
+      <div className="mt-6 space-y-6 border-t pt-6">
+        <RateActionsSection county={county} />
+        <EnergyBurdenSection county={county} place={place} />
+        <RaceReferenceSection />
+      </div>
     </div>
   );
 }
