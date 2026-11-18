@@ -6,16 +6,18 @@ import { EnergyBurdenSection } from "./energy-burden-section";
 import { ProvidersSection } from "./providers-section";
 import { RaceReferenceSection } from "./race-reference-section";
 import { RateActionsSection } from "./rate-actions-section";
-import { SnapshotCards } from "./snapshot-cards";
+import { BroadbandCard, LeadLinesCard, WaterCard } from "./snapshot-cards";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 /**
- * Tabs hold data that exists for the selected county or its utilities. Water and broadband are
- * snapshot cards in the county area (no rate history); a statewide Water tab is added once data exists.
+ * Tabs hold data that exists for the selected county or its utilities. Water holds the lead service
+ * line counts and the few water/sewer rates collected. Broadband lists fixed availability by place.
  */
 const TABS = [
   { key: "electric", label: "Electric" },
   { key: "gas", label: "Natural Gas" },
+  { key: "water", label: "Water" },
+  { key: "broadband", label: "Broadband" },
   { key: "actions", label: "Rate Actions" },
   { key: "burden", label: "Energy Burden" },
 ] as const;
@@ -39,8 +41,6 @@ export function DetailsPanel({ county }: { county: string | null }) {
 
       <ProvidersSection county={county} />
 
-      <SnapshotCards county={county} />
-
       <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)} className="mt-4">
         <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 bg-surface p-1">
           {TABS.map((t) => (
@@ -55,6 +55,13 @@ export function DetailsPanel({ county }: { county: string | null }) {
         </TabsContent>
         <TabsContent value="gas" className="mt-4 space-y-4">
           <GasRateHistory county={county} />
+        </TabsContent>
+        <TabsContent value="water" className="mt-4 space-y-4">
+          <LeadLinesCard county={county} />
+          <WaterCard county={county} />
+        </TabsContent>
+        <TabsContent value="broadband" className="mt-4 space-y-4">
+          <BroadbandCard county={county} />
         </TabsContent>
         <TabsContent value="actions" className="mt-4 space-y-4">
           <RateActionsSection county={county} />

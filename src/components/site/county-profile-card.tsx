@@ -47,12 +47,17 @@ export function CountyProfileCard({ county }: { county: string | null }) {
             <dd className="font-display text-xl font-bold text-primary">
               {usd.format(p.medianHouseholdIncome)}
             </dd>
+            {p.medianHouseholdIncomeMoe !== null && (
+              <dd className="text-xs text-muted-foreground">
+                Margin of error ± {usd.format(p.medianHouseholdIncomeMoe)}
+              </dd>
+            )}
           </div>
         )}
         {p.blackSharePct !== null && (
           <div>
             <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Black residents
+              Black residents (not Hispanic or Latino)
             </dt>
             <dd className="font-display text-xl font-bold text-primary">
               {p.blackSharePct.toFixed(1)}% of the population

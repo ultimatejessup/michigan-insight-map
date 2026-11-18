@@ -13,6 +13,7 @@ const rows = [
     data_year: 2024,
     total_population: 83757,
     median_household_income: "77538.00",
+    median_household_income_moe: "2100",
     geographies: { name: "Midland" },
     geo_demographics_race: [{ race_category: "Black", pct_of_population: "1.40" }],
   },
@@ -34,6 +35,7 @@ describe("county profile", () => {
       dataYear: 2024,
       population: 83757,
       medianHouseholdIncome: 77538,
+      medianHouseholdIncomeMoe: 2100,
       blackSharePct: 1.4,
     });
   });

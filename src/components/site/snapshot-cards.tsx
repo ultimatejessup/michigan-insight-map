@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { formatTableDate } from "@/lib/rates/electric-rates";
 import { broadbandForCounty, fetchBroadband, FIXED_TECHNOLOGIES } from "@/lib/broadband/broadband";
@@ -27,7 +28,7 @@ function ExtLink({ href, children }: { href: string; children: React.ReactNode }
 
 const usd = (n: number) => `$${n.toFixed(2)}`;
 
-function WaterCard({ county }: { county: string | null }) {
+export function WaterCard({ county }: { county: string | null }) {
   const rates = useQuery({
     queryKey: ["water-rates"],
     queryFn: ({ signal }) => fetchWaterRates(signal),
@@ -127,13 +128,16 @@ function WaterBody({ rows, county }: { rows: ReturnType<typeof waterForCounty>; 
   );
 }
 
-function BroadbandCard({ county }: { county: string | null }) {
+export function BroadbandCard({ county }: { county: string | null }) {
   const q = useQuery({
     queryKey: ["broadband"],
     queryFn: ({ signal }) => fetchBroadband(signal),
     staleTime: DAY,
   });
   const data = q.data ? broadbandForCounty(q.data, county) : null;
+  const [all, setAll] = useState(false);
+  const LIMIT = 5;
+  const places = data ? (all ? data.places : data.places.slice(0, LIMIT)) : [];
   return (
     <section aria-labelledby="broadband-snapshot" className="rounded-md border bg-surface p-4">
       <h3 id="broadband-snapshot" className="font-display text-base font-semibold">
@@ -170,7 +174,7 @@ function BroadbandCard({ county }: { county: string | null }) {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {data.places.map((p) => (
+              {places.map((p) => (
                 <tr key={p.place}>
                   <th scope="row" className="py-1 pr-3 font-medium">
                     {p.place}
@@ -184,6 +188,15 @@ function BroadbandCard({ county }: { county: string | null }) {
               ))}
             </tbody>
           </table>
+          {data.places.length > LIMIT && (
+            <button
+              type="button"
+              onClick={() => setAll((v) => !v)}
+              className="mt-2 rounded-md border px-3 py-1 text-sm font-semibold"
+            >
+              {all ? "Show fewer places" : `Show all ${data.places.length} places`}
+            </button>
+          )}
         </div>
       )}
       <p className="mt-3 text-xs text-muted-foreground">
@@ -197,7 +210,7 @@ function BroadbandCard({ county }: { county: string | null }) {
 
 const num = (n: number | null) => (n === null ? "not reported" : n.toLocaleString("en-US"));
 
-function LeadLinesCard({ county }: { county: string | null }) {
+export function LeadLinesCard({ county }: { county: string | null }) {
   const supplies = useQuery({
     queryKey: ["dsmi-supplies"],
     queryFn: ({ signal }) => fetchSupplies(signal),
@@ -285,15 +298,5 @@ function LeadLinesCard({ county }: { county: string | null }) {
         . <ExtLink href={DSMI_SOURCE_URL}>EGLE inventory</ExtLink>
       </p>
     </section>
-  );
-}
-
-export function SnapshotCards({ county }: { county: string | null }) {
-  return (
-    <div className="mt-4 grid gap-4 lg:grid-cols-2">
-      <WaterCard county={county} />
-      <BroadbandCard county={county} />
-      <LeadLinesCard county={county} />
-    </div>
   );
 }
