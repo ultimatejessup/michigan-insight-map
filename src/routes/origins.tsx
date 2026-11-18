@@ -69,12 +69,12 @@ function OriginsPage() {
         <section>
           <h2 className="font-display text-2xl font-bold">Bill explanations are optional</h2>
           <p className="mt-3">
-            Bill Check reads the bill you choose on your own device and hides personal details such
-            as account numbers and addresses. You review and can edit the text, and only the text
-            you send goes to an AI service for a plain-language explanation. The site does not save
-            or publish it. Automatic hiding is not perfect, and AI can make mistakes, so check the
-            text before you send it and the explanation against your bill. You never need to use
-            Bill Check to use the tracker.
+            Bill Check reads the bill you choose on your own device and explains each charge in plain
+            language using a reviewed list of common Michigan bill terms. The bill is not uploaded
+            or sent to an AI service, and the site does not save or publish it. It can only explain
+            charges it recognizes, and it copies amounts as printed rather than calculating
+            anything, so check the explanation against your bill. You never need to use Bill Check
+            to use the tracker.
           </p>
         </section>
         <section>

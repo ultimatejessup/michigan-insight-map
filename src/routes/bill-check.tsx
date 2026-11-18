@@ -1,36 +1,29 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { useState } from "react";
 import { Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { pageHead } from "@/lib/seo";
-import {
-  countRemainingPii,
-  describeCounts,
-  redactBillText,
-  type PiiCounts,
-} from "@/lib/bill/redact";
+import { describeCounts, redactBillText, type PiiCounts } from "@/lib/bill/redact";
+import { analyzeBill, type BillAnalysis } from "@/lib/bill/analyze";
+import { SOURCES, type SourceKey } from "@/lib/bill/glossary";
 
 export const Route = createFileRoute("/bill-check")({
   head: () =>
     pageHead(
       "/bill-check",
       "Bill Explainer — Michigan Essentials Watch",
-      "Read your Michigan utility bill on your own device, hide personal details, review the text, then get a plain-language explanation of each charge.",
+      "Read your Michigan utility bill on your own device, check the text, then get a plain-language explanation of each charge. Nothing is sent anywhere.",
     ),
   component: BillCheckPage,
 });
 
-const ERROR_MARKER = "\u0000ERROR:";
 const MAX_BYTES = 10 * 1024 * 1024;
 const MAX_CHARS = 30_000;
 
 type Step = "choose" | "reading" | "review";
-type ExplainStatus = "idle" | "working" | "done" | "error" | "stopped";
 
 const EMPTY_COUNTS: PiiCounts = { account: 0, address: 0, name: 0, phone: 0, email: 0, custom: 0 };
 
@@ -52,7 +45,7 @@ const splitWords = (s: string) =>
     .filter(Boolean);
 
 function Steps({ current }: { current: 1 | 2 | 3 }) {
-  const items = ["Choose your bill", "Review the text", "Get the explanation"];
+  const items = ["Choose your bill", "Check the text", "See the explanation"];
   return (
     <ol className="mt-6 grid gap-2 sm:grid-cols-3" aria-label="Steps">
       {items.map((label, i) => {
@@ -84,6 +77,156 @@ function Steps({ current }: { current: 1 | 2 | 3 }) {
   );
 }
 
+const UTILITY_LABEL = {
+  electric: "Electric",
+  gas: "Natural gas",
+  water: "Water / sewer",
+  internet: "Internet",
+  unknown: "Not sure",
+} as const;
+
+function Explanation({ analysis, onBack }: { analysis: BillAnalysis; onBack: () => void }) {
+  const a = analysis;
+  const sourceKeys = [
+    ...new Set(a.items.map((i) => i.entry?.source).filter((s): s is SourceKey => !!s)),
+  ];
+  const summary: [string, string][] = [
+    ["Type of bill", UTILITY_LABEL[a.utility]],
+    ...(a.period ? ([["Billing period", a.period]] as [string, string][]) : []),
+    ...(a.totalDue ? ([["Total due", a.totalDue]] as [string, string][]) : []),
+    ...(a.dueDate ? ([["Due date", a.dueDate]] as [string, string][]) : []),
+  ];
+
+  return (
+    <section
+      aria-live="polite"
+      aria-label="Bill explanation"
+      className="mt-8 rounded-lg border bg-card p-6 shadow-card"
+    >
+      <h2 className="mb-3 text-xl font-bold text-primary">Step 3 · Your explanation</h2>
+
+      <h3 className="mt-4 text-lg font-bold">Quick summary</h3>
+      <dl className="mt-2 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+        {summary.map(([k, v]) => (
+          <div key={k}>
+            <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {k}
+            </dt>
+            <dd className="font-semibold">{v}</dd>
+          </div>
+        ))}
+      </dl>
+      {a.items.length === 0 ? (
+        <p className="mt-4 rounded-md bg-surface p-3 text-sm">
+          We couldn’t find charge lines with dollar amounts in this text. Go back and check that the
+          lines and amounts from your bill are in the box, one charge per line.
+        </p>
+      ) : null}
+
+      {a.items.length > 0 ? (
+        <>
+          <h3 className="mt-6 text-lg font-bold">Line items explained</h3>
+          <div className="mt-2 overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b text-xs uppercase tracking-wide text-muted-foreground">
+                  <th scope="col" className="py-2 pr-3">
+                    Charge
+                  </th>
+                  <th scope="col" className="py-2 pr-3">
+                    Amount
+                  </th>
+                  <th scope="col" className="py-2">
+                    What it means
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {a.items.map((i, idx) => (
+                  <tr key={`${i.label}-${idx}`} className="border-b align-top">
+                    <td className="py-2 pr-3 font-semibold">{i.label}</td>
+                    <td className="whitespace-nowrap py-2 pr-3">{i.amount}</td>
+                    <td className="py-2">
+                      {i.entry ? (
+                        i.entry.meaning
+                      ) : (
+                        <span className="text-muted-foreground">
+                          Not in our list of common charges. Ask your provider (see below).
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      ) : null}
+
+      {a.flags.length > 0 ? (
+        <>
+          <h3 className="mt-6 text-lg font-bold">Charges you may want to ask about</h3>
+          <ul className="mt-2 list-disc space-y-3 pl-5 text-sm">
+            {a.flags.map((f, idx) => (
+              <li key={`${f.id}-${idx}`}>
+                <strong>
+                  {f.title}
+                  {f.label && f.amount ? ` (${f.label}, ${f.amount})` : ""}.
+                </strong>{" "}
+                {f.why}
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : null}
+
+      {a.questions.length > 0 ? (
+        <>
+          <h3 className="mt-6 text-lg font-bold">Questions to ask your provider</h3>
+          <ol className="mt-2 list-decimal space-y-2 pl-5 text-sm">
+            {a.questions.map((q) => (
+              <li key={q}>{q}</li>
+            ))}
+          </ol>
+        </>
+      ) : null}
+
+      <div className="mt-6 border-t pt-4 text-sm text-muted-foreground">
+        <p>
+          How this was made: on your device, from the text you checked, using a reviewed list of
+          common Michigan bill terms. Amounts are copied as printed; we do not add up, estimate or
+          look up any figures. Provider bills differ, so confirm anything important with your
+          provider. This is general information, not legal or financial advice.
+        </p>
+        {sourceKeys.length > 0 ? (
+          <p className="mt-2">
+            Sources for the descriptions:{" "}
+            {sourceKeys.map((k, idx) => (
+              <span key={k}>
+                {idx > 0 ? "; " : ""}
+                <a
+                  href={SOURCES[k].url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-primary underline underline-offset-2"
+                >
+                  {SOURCES[k].label}
+                </a>
+              </span>
+            ))}
+            .
+          </p>
+        ) : null}
+        <div className="mt-4">
+          <Button type="button" variant="outlinePrimary" onClick={onBack}>
+            Go back and edit the text
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function BillCheckPage() {
   const [step, setStep] = useState<Step>("choose");
   const [file, setFile] = useState<File | null>(null);
@@ -95,20 +238,14 @@ function BillCheckPage() {
   const [hideWords, setHideWords] = useState("");
   const [appliedWords, setAppliedWords] = useState<string[]>([]);
   const [readNote, setReadNote] = useState("");
-  const [warnRemaining, setWarnRemaining] = useState(0);
 
-  const [output, setOutput] = useState("");
-  const [status, setStatus] = useState<ExplainStatus>("idle");
+  const [analysis, setAnalysis] = useState<BillAnalysis | null>(null);
   const [error, setError] = useState("");
-  const abortRef = useRef<AbortController | null>(null);
 
-  const working = status === "working";
   const reading = step === "reading";
-  const currentStep: 1 | 2 | 3 =
-    output || working || status === "stopped" ? 3 : step === "review" ? 2 : 1;
+  const currentStep: 1 | 2 | 3 = analysis ? 3 : step === "review" ? 2 : 1;
 
   const resetAll = () => {
-    abortRef.current?.abort();
     setStep("choose");
     setFile(null);
     setReviewText("");
@@ -116,9 +253,7 @@ function BillCheckPage() {
     setHideWords("");
     setAppliedWords([]);
     setReadNote("");
-    setWarnRemaining(0);
-    setOutput("");
-    setStatus("idle");
+    setAnalysis(null);
     setError("");
   };
 
@@ -129,7 +264,7 @@ function BillCheckPage() {
     setReadNote(note);
     setAppliedWords([]);
     setHideWords("");
-    setWarnRemaining(0);
+    setAnalysis(null);
     setStep("review");
   };
 
@@ -143,8 +278,7 @@ function BillCheckPage() {
       return;
     }
     setError("");
-    setOutput("");
-    setStatus("idle");
+    setAnalysis(null);
     setStep("reading");
     setProgress({ message: "Getting ready…" });
     try {
@@ -177,8 +311,7 @@ function BillCheckPage() {
 
   const onPaste = () => {
     setError("");
-    setOutput("");
-    setStatus("idle");
+    setAnalysis(null);
     setFile(null);
     goToReview(
       "",
@@ -194,17 +327,9 @@ function BillCheckPage() {
     setHidden((h) => addCounts(h, r.counts));
     setAppliedWords((w) => [...new Set([...w, ...words])]);
     setHideWords("");
-    setWarnRemaining(0);
   };
 
-  const hideAgain = () => {
-    const r = redactBillText(reviewText, appliedWords);
-    setReviewText(r.text);
-    setHidden((h) => addCounts(h, r.counts));
-    setWarnRemaining(0);
-  };
-
-  const explain = async (skipCheck = false) => {
+  const explain = () => {
     const text = reviewText.trim();
     if (text.length < 40) {
       setError("There isn't enough text to explain yet. Add more of your bill.");
@@ -214,56 +339,8 @@ function BillCheckPage() {
       setError("That's too much text. Remove pages you don't need (for example the back page).");
       return;
     }
-    if (!skipCheck) {
-      const remaining = countRemainingPii(text, appliedWords);
-      if (remaining > 0) {
-        setWarnRemaining(remaining);
-        return;
-      }
-    }
-    setWarnRemaining(0);
     setError("");
-    setOutput("");
-    setStatus("working");
-    const controller = new AbortController();
-    abortRef.current = controller;
-
-    try {
-      const res = await fetch("/api/bill-explain", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-        signal: controller.signal,
-      });
-      if (!res.ok || !res.body) {
-        const data = (await res.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(data?.error ?? "Something went wrong. Please try again.");
-      }
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let acc = "";
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        acc += decoder.decode(value, { stream: true });
-        const idx = acc.indexOf(ERROR_MARKER);
-        if (idx !== -1) {
-          setOutput(acc.slice(0, idx));
-          throw new Error(acc.slice(idx + ERROR_MARKER.length));
-        }
-        setOutput(acc);
-      }
-      setStatus("done");
-    } catch (err) {
-      if (controller.signal.aborted) {
-        setStatus("stopped");
-        return;
-      }
-      setError(err instanceof Error ? err.message : "Something went wrong.");
-      setStatus("error");
-    } finally {
-      abortRef.current = null;
-    }
+    setAnalysis(analyzeBill(text));
   };
 
   const hiddenSummary = describeCounts(hidden);
@@ -274,10 +351,9 @@ function BillCheckPage() {
         Understand your utility bill
       </h1>
       <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-        Choose your electric, gas, water or internet bill. We read it on your own device and hide
-        personal details. You check the text, and only then does our AI-powered explainer walk
-        through each charge in plain language and flag anything you may want to ask your provider
-        about.
+        Choose your electric, gas, water or internet bill. We read it on your own device, you check
+        the text, and we explain each charge in plain language and flag anything you may want to ask
+        your provider about. Nothing you choose or type here is sent anywhere.
       </p>
 
       <Steps current={currentStep} />
@@ -336,12 +412,12 @@ function BillCheckPage() {
       {step === "review" ? (
         <section className="mt-6 rounded-lg border bg-card p-6 shadow-card" aria-labelledby="step2">
           <h2 id="step2" className="text-xl font-bold text-primary">
-            Step 2 · Review the text
+            Step 2 · Check the text
           </h2>
           <p className="mt-2 rounded-md bg-surface p-3 text-sm">
-            <strong>Nothing has been sent yet.</strong> Only the text in the box below will be sent
-            to our AI service, and only when you press “Send this text”. You can change anything in
-            it.
+            <strong>Nothing leaves your device.</strong> Your bill is read and explained here in
+            your browser. Check that the amounts below match your bill, because photos can be
+            misread. You can change anything in the box.
           </p>
 
           {readNote ? <p className="mt-3 text-sm text-muted-foreground">{readNote}</p> : null}
@@ -352,29 +428,29 @@ function BillCheckPage() {
           >
             {hiddenSummary.length ? (
               <>
-                <strong>We hid {hiddenSummary.join(", ")}.</strong> They show as [REDACTED].
+                <strong>We hid {hiddenSummary.join(", ")}.</strong> They show as [REDACTED], which
+                is handy if you share a screenshot.
               </>
             ) : (
               <strong>We didn’t find personal details to hide.</strong>
             )}{" "}
-            Automatic hiding isn’t perfect, so read the text below and remove anything else you
-            don’t want to share. City, state and ZIP are left in on purpose.
+            Automatic hiding isn’t perfect, so remove anything else before you share this text with
+            anyone. City, state and ZIP are left in on purpose.
           </div>
 
           <Label htmlFor="bill-text" className="mt-5 block text-base font-semibold">
-            The text that will be sent
+            Your bill text
           </Label>
           <Textarea
             id="bill-text"
             value={reviewText}
             onChange={(e) => {
               setReviewText(e.target.value);
-              setWarnRemaining(0);
+              setAnalysis(null);
             }}
             rows={16}
             spellCheck={false}
             className="mt-2 font-mono text-xs leading-relaxed"
-            disabled={working}
           />
           <p className="mt-1 text-xs text-muted-foreground">
             {reviewText.length.toLocaleString()} of {MAX_CHARS.toLocaleString()} characters
@@ -397,13 +473,12 @@ function BillCheckPage() {
                 }}
                 placeholder="e.g. Jordan Smith, Maple"
                 className="max-w-sm"
-                disabled={working}
               />
               <Button
                 type="button"
                 variant="outlinePrimary"
                 onClick={applyHideWords}
-                disabled={working || !splitWords(hideWords).length}
+                disabled={!splitWords(hideWords).length}
               >
                 Hide these words
               </Button>
@@ -411,53 +486,23 @@ function BillCheckPage() {
           </div>
 
           <p className="mt-5 text-sm text-muted-foreground">
-            Privacy: this text is sent to our AI service only to create your explanation. It is not
-            saved on this site. We can’t speak for how the AI provider handles data, so don’t send
-            anything you’re not comfortable sharing.
+            Privacy: this page does not send your bill, or the text you type here, to our servers or
+            to any AI service, and nothing is saved. The explanation is made in your browser from a
+            reviewed list of common Michigan bill terms, so it can only explain charges it
+            recognizes.
           </p>
-
-          {warnRemaining > 0 ? (
-            <div
-              role="alert"
-              className="mt-4 rounded-lg border-l-4 border-destructive bg-surface p-4 text-sm"
-            >
-              <p className="font-semibold">
-                This text still looks like it has {warnRemaining} personal detail
-                {warnRemaining === 1 ? "" : "s"} (such as a number, address or name).
-              </p>
-              <div className="mt-3 flex flex-wrap gap-3">
-                <Button type="button" variant="accent" onClick={hideAgain}>
-                  Hide them for me
-                </Button>
-                <Button type="button" variant="outlinePrimary" onClick={() => explain(true)}>
-                  Send as it is
-                </Button>
-              </div>
-            </div>
-          ) : null}
 
           <div className="mt-5 flex flex-wrap gap-3">
             <Button
               type="button"
               variant="accent"
               size="lg"
-              onClick={() => explain(false)}
-              disabled={working || !reviewText.trim()}
+              onClick={explain}
+              disabled={!reviewText.trim()}
             >
-              {working ? <Loader2 className="animate-spin" aria-hidden="true" /> : null}
-              {working ? "Reading your bill…" : "Send this text and explain my bill"}
+              Explain my bill
             </Button>
-            {working ? (
-              <Button
-                type="button"
-                variant="outlinePrimary"
-                size="lg"
-                onClick={() => abortRef.current?.abort()}
-              >
-                Stop
-              </Button>
-            ) : null}
-            <Button type="button" variant="ghost" size="lg" onClick={resetAll} disabled={working}>
+            <Button type="button" variant="ghost" size="lg" onClick={resetAll}>
               Start over
             </Button>
           </div>
@@ -474,33 +519,7 @@ function BillCheckPage() {
       ) : null}
 
       {/* Step 3 */}
-      {output || working ? (
-        <section
-          aria-live="polite"
-          aria-label="Bill explanation"
-          className="mt-8 rounded-lg border bg-card p-6 shadow-card"
-        >
-          <h2 className="mb-3 text-xl font-bold text-primary">Step 3 · Your explanation</h2>
-          {output ? (
-            <div className="bill-markdown">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{output}</ReactMarkdown>
-            </div>
-          ) : (
-            <p className="flex items-center gap-2 text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Reading your bill.
-              This can take up to a minute.
-            </p>
-          )}
-          {status === "stopped" ? (
-            <p className="mt-4 text-sm text-muted-foreground">Stopped.</p>
-          ) : null}
-          <p className="mt-6 border-t pt-4 text-sm text-muted-foreground">
-            Source: the text you reviewed and sent, explained by AI. AI can make mistakes — check
-            every figure against your bill before acting. This is general information, not legal or
-            financial advice.
-          </p>
-        </section>
-      ) : null}
+      {analysis ? <Explanation analysis={analysis} onBack={() => setAnalysis(null)} /> : null}
 
       <p className="mt-10 text-base">
         Want your experience counted?{" "}

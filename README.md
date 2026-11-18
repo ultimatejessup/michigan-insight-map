@@ -7,8 +7,9 @@ essential utilities, understand who decides, and make their experiences heard.
 - **Tracker**: sourced utility information by county (electric, natural gas, water, broadband).
   Figures come from stored database values with a visible source; missing data is labeled, never
   estimated.
-- **Bill Check**: reads a resident's bill on their own device, hides personal details, lets them
-  review the text, and only then sends that text for an optional AI explanation.
+- **Bill Check**: reads a resident's bill on their own device, lets them check
+  the text, and explains each charge in the browser from a reviewed glossary of Michigan bill terms.
+  No bill text is sent to a server or an AI service.
 - **Survey, Pledge and Build**: ways to share experiences, see candidate pledges and get involved.
 
 ## Stack
