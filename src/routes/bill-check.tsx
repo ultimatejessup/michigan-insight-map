@@ -82,6 +82,7 @@ const UTILITY_LABEL = {
   gas: "Natural gas",
   water: "Water / sewer",
   internet: "Internet",
+  combined: "Electric and natural gas",
   unknown: "Not sure",
 } as const;
 
@@ -93,8 +94,15 @@ function Explanation({ analysis, onBack }: { analysis: BillAnalysis; onBack: () 
   const summary: [string, string][] = [
     ["Type of bill", UTILITY_LABEL[a.utility]],
     ...(a.period ? ([["Billing period", a.period]] as [string, string][]) : []),
-    ...(a.totalDue ? ([["Total due", a.totalDue]] as [string, string][]) : []),
-    ...(a.dueDate ? ([["Due date", a.dueDate]] as [string, string][]) : []),
+    ...(a.totalDue
+      ? ([[a.autopay ? "Amount to be withdrawn" : "Total due", a.totalDue]] as [string, string][])
+      : []),
+    ...(a.dueDate
+      ? ([[a.autopay ? "Automatic withdrawal date" : "Due date", a.dueDate]] as [string, string][])
+      : []),
+    ...(a.currentCharges
+      ? ([["Total current charges", a.currentCharges]] as [string, string][])
+      : []),
   ];
 
   return (
