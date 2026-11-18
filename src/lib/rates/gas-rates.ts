@@ -203,7 +203,7 @@ export function pivotGasForChart(points: GasRatePoint[], selected: string[]): Ga
   const byDate = new Map<string, GasChartRow>();
   for (const p of points) {
     if (!keep.has(p.utility) || p.total === null) continue;
-    const row = byDate.get(p.readingDate) ?? { date: p.readingDate };
+    const row: GasChartRow = byDate.get(p.readingDate) ?? { date: p.readingDate };
     row[p.utility] = p.total;
     byDate.set(p.readingDate, row);
   }

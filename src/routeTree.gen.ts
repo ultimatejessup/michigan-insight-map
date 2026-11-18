@@ -13,11 +13,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as BillCheckRouteImport } from './routes/bill-check'
 import { Route as BuildRouteImport } from './routes/build'
 import { Route as DisclaimersRouteImport } from './routes/disclaimers'
-import { Route as WaterServiceLinesRouteImport } from './routes/water-service-lines'
-import { Route as SourcesRouteImport } from './routes/sources'
 import { Route as OriginsRouteImport } from './routes/origins'
 import { Route as PledgeRouteImport } from './routes/pledge'
+import { Route as SourcesRouteImport } from './routes/sources'
 import { Route as SurveyRouteImport } from './routes/survey'
+import { Route as WaterServiceLinesRouteImport } from './routes/water-service-lines'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -39,16 +39,6 @@ const DisclaimersRoute = DisclaimersRouteImport.update({
   path: '/disclaimers',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WaterServiceLinesRoute = WaterServiceLinesRouteImport.update({
-  id: '/water-service-lines',
-  path: '/water-service-lines',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SourcesRoute = SourcesRouteImport.update({
-  id: '/sources',
-  path: '/sources',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const OriginsRoute = OriginsRouteImport.update({
   id: '/origins',
   path: '/origins',
@@ -59,9 +49,19 @@ const PledgeRoute = PledgeRouteImport.update({
   path: '/pledge',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SourcesRoute = SourcesRouteImport.update({
+  id: '/sources',
+  path: '/sources',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SurveyRoute = SurveyRouteImport.update({
   id: '/survey',
   path: '/survey',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WaterServiceLinesRoute = WaterServiceLinesRouteImport.update({
+  id: '/water-service-lines',
+  path: '/water-service-lines',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -71,10 +71,10 @@ export interface FileRoutesByFullPath {
   '/build': typeof BuildRoute
   '/disclaimers': typeof DisclaimersRoute
   '/origins': typeof OriginsRoute
-  '/sources': typeof SourcesRoute
-  '/water-service-lines': typeof WaterServiceLinesRoute
   '/pledge': typeof PledgeRoute
+  '/sources': typeof SourcesRoute
   '/survey': typeof SurveyRoute
+  '/water-service-lines': typeof WaterServiceLinesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -82,10 +82,10 @@ export interface FileRoutesByTo {
   '/build': typeof BuildRoute
   '/disclaimers': typeof DisclaimersRoute
   '/origins': typeof OriginsRoute
-  '/sources': typeof SourcesRoute
-  '/water-service-lines': typeof WaterServiceLinesRoute
   '/pledge': typeof PledgeRoute
+  '/sources': typeof SourcesRoute
   '/survey': typeof SurveyRoute
+  '/water-service-lines': typeof WaterServiceLinesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -94,10 +94,10 @@ export interface FileRoutesById {
   '/build': typeof BuildRoute
   '/disclaimers': typeof DisclaimersRoute
   '/origins': typeof OriginsRoute
-  '/sources': typeof SourcesRoute
-  '/water-service-lines': typeof WaterServiceLinesRoute
   '/pledge': typeof PledgeRoute
+  '/sources': typeof SourcesRoute
   '/survey': typeof SurveyRoute
+  '/water-service-lines': typeof WaterServiceLinesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -107,10 +107,10 @@ export interface FileRouteTypes {
     | '/build'
     | '/disclaimers'
     | '/origins'
-    | '/sources'
-    | '/water-service-lines'
     | '/pledge'
+    | '/sources'
     | '/survey'
+    | '/water-service-lines'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -118,10 +118,10 @@ export interface FileRouteTypes {
     | '/build'
     | '/disclaimers'
     | '/origins'
-    | '/sources'
-    | '/water-service-lines'
     | '/pledge'
+    | '/sources'
     | '/survey'
+    | '/water-service-lines'
   id:
     | '__root__'
     | '/'
@@ -129,10 +129,10 @@ export interface FileRouteTypes {
     | '/build'
     | '/disclaimers'
     | '/origins'
-    | '/sources'
-    | '/water-service-lines'
     | '/pledge'
+    | '/sources'
     | '/survey'
+    | '/water-service-lines'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -141,10 +141,10 @@ export interface RootRouteChildren {
   BuildRoute: typeof BuildRoute
   DisclaimersRoute: typeof DisclaimersRoute
   OriginsRoute: typeof OriginsRoute
-  SourcesRoute: typeof SourcesRoute
-  WaterServiceLinesRoute: typeof WaterServiceLinesRoute
   PledgeRoute: typeof PledgeRoute
+  SourcesRoute: typeof SourcesRoute
   SurveyRoute: typeof SurveyRoute
+  WaterServiceLinesRoute: typeof WaterServiceLinesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -177,20 +177,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DisclaimersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/water-service-lines': {
-      id: '/water-service-lines'
-      path: '/water-service-lines'
-      fullPath: '/water-service-lines'
-      preLoaderRoute: typeof WaterServiceLinesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sources': {
-      id: '/sources'
-      path: '/sources'
-      fullPath: '/sources'
-      preLoaderRoute: typeof SourcesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/origins': {
       id: '/origins'
       path: '/origins'
@@ -205,11 +191,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PledgeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sources': {
+      id: '/sources'
+      path: '/sources'
+      fullPath: '/sources'
+      preLoaderRoute: typeof SourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/survey': {
       id: '/survey'
       path: '/survey'
       fullPath: '/survey'
       preLoaderRoute: typeof SurveyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/water-service-lines': {
+      id: '/water-service-lines'
+      path: '/water-service-lines'
+      fullPath: '/water-service-lines'
+      preLoaderRoute: typeof WaterServiceLinesRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -221,10 +221,10 @@ const rootRouteChildren: RootRouteChildren = {
   BuildRoute: BuildRoute,
   DisclaimersRoute: DisclaimersRoute,
   OriginsRoute: OriginsRoute,
-  SourcesRoute: SourcesRoute,
-  WaterServiceLinesRoute: WaterServiceLinesRoute,
   PledgeRoute: PledgeRoute,
+  SourcesRoute: SourcesRoute,
   SurveyRoute: SurveyRoute,
+  WaterServiceLinesRoute: WaterServiceLinesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
